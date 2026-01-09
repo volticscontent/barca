@@ -70,14 +70,18 @@ export default function CheckoutForm({ amount, cartItems }: CheckoutFormProps) {
   };
 
   const handleAddressChange = (event: StripeAddressElementChangeEvent) => {
-    if (event.complete && event.value.address) {
-      const { city, state, postal_code, country } = event.value.address;
+    if (event.value.address) {
+      const { city, state, postal_code, country, line1, line2 } = event.value.address;
       const { name } = event.value;
 
-      if (city) sessionStorage.setItem('user_city', city);
-      if (state) sessionStorage.setItem('user_state', state);
-      if (postal_code) sessionStorage.setItem('user_zip', postal_code);
-      if (country) sessionStorage.setItem('user_country', country);
+      // Save to session storage even if incomplete to avoid losing data on re-renders
+      // and ensure we capture clearing of fields (empty strings)
+      sessionStorage.setItem('user_city', city || '');
+      sessionStorage.setItem('user_state', state || '');
+      sessionStorage.setItem('user_zip', postal_code || '');
+      sessionStorage.setItem('user_country', country || '');
+      sessionStorage.setItem('user_line1', line1 || '');
+      sessionStorage.setItem('user_line2', line2 || '');
       
       // Attempt to split name into First/Last if provided
       if (name) {
@@ -86,6 +90,8 @@ export default function CheckoutForm({ amount, cartItems }: CheckoutFormProps) {
               sessionStorage.setItem('user_first_name', nameParts[0]);
               if (nameParts.length > 1) {
                   sessionStorage.setItem('user_last_name', nameParts.slice(1).join(' '));
+              } else {
+                  sessionStorage.removeItem('user_last_name');
               }
           }
       }
@@ -138,8 +144,8 @@ export default function CheckoutForm({ amount, cartItems }: CheckoutFormProps) {
     const userData = fpixel.normalizeData({
         email: email,
         phone: phone,
-        firstName: sessionStorage.getItem('user_first_name') || undefined,
-        lastName: sessionStorage.getItem('user_last_name') || undefined,
+        firstName: sessionStorage.getItem('user_first_name') || '',
+        lastName: sessionStorage.getItem('user_last_name') || '',
     });
     
     // Add address info if available
@@ -176,12 +182,27 @@ export default function CheckoutForm({ amount, cartItems }: CheckoutFormProps) {
                 address: {
                     city: sessionStorage.getItem('user_city') || undefined,
                     country: sessionStorage.getItem('user_country') || undefined,
-                    line1: undefined, // AddressElement handles this internally via Elements if linked properly, but we might need to extract if manual
+                    line1: sessionStorage.getItem('user_line1') || '',
+                    line2: sessionStorage.getItem('user_line2') || undefined,
                     postal_code: sessionStorage.getItem('user_zip') || undefined,
                     state: sessionStorage.getItem('user_state') || undefined,
-                }
+              }
             }
         },
+        shipping: {  
+          name: sessionStorage.getItem('user_first_name') ? 
+                `${sessionStorage.getItem('user_first_name')} ${sessionStorage.getItem('user_last_name') || ''}`.trim() 
+                : 'Client',
+          phone: phone,
+          address: {
+            city: sessionStorage.getItem('user_city') || undefined,
+            country: sessionStorage.getItem('user_country') || undefined,
+            line1: sessionStorage.getItem('user_line1') || '',
+            line2: sessionStorage.getItem('user_line2') || undefined,
+            postal_code: sessionStorage.getItem('user_zip') || undefined,
+            state: sessionStorage.getItem('user_state') || undefined,
+          }
+        }
       },
     });
 

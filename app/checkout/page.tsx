@@ -9,6 +9,7 @@ import { Loader2, Lock, ArrowLeft } from "lucide-react";
 import Footer from "../components/Footer";
 import Link from "next/link";
 import Image from "next/image";
+import { getUTMParams } from "../lib/utmNavigation";
 
 // Make sure to call loadStripe outside of a component’s render to avoid
 // recreating the Stripe object on every render.
@@ -41,10 +42,16 @@ export default function CheckoutPage() {
 
     // Create PaymentIntent as soon as the page loads if cart is not empty
     if (totalAmount > 0 && !clientSecret) {
+      const utmParams = getUTMParams();
+      
       fetch("/api/create-payment-intent", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount: totalAmount }),
+        body: JSON.stringify({ 
+          amount: totalAmount,
+          cartItems: cartItems,
+          utmParams
+        }),
       })
         .then((res) => res.json())
         .then((data) => {
@@ -58,7 +65,7 @@ export default function CheckoutPage() {
            console.error("Error creating payment intent", err);
         });
     }
-  }, [totalAmount, clientSecret]);
+  }, [totalAmount, clientSecret, cartItems]);
 
   const appearance = {
     theme: 'stripe' as const,

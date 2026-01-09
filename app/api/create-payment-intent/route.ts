@@ -8,22 +8,30 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 
 export async function POST(request: Request) {
   try {
-    const { amount } = await request.json();
+    const { amount, cartItems, utmParams } = await request.json();
 
-    if (!amount) {
-      return NextResponse.json(
-        { error: 'Amount is required' },
-        { status: 400 }
-      );
+    // Simplify cart items to fit within Stripe metadata limit (500 chars)
+    // Only keep essential info: id, name, qty
+    const simplifiedItems = cartItems.map((item: any) => ({
+      id: item.id,
+      name: item.name.substring(0, 20), // Truncate name
+      qty: item.quantity || item.qty
+    }));
+
+    let cartItemsString = JSON.stringify(simplifiedItems);
+    
+    // If still too long, truncate safely
+    if (cartItemsString.length > 490) {
+        cartItemsString = cartItemsString.substring(0, 490) + "...";
     }
 
-    // Create a PaymentIntent with the order amount and currency
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: Math.round(amount * 100), // Convert to cents
+      amount: Math.round(amount * 100),
       currency: 'eur',
-      automatic_payment_methods: {
-        enabled: true,
-      },
+      metadata: {
+        cart_items: cartItemsString,
+        ...utmParams
+      }
     });
 
     return NextResponse.json({

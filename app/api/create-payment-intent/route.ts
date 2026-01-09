@@ -1,12 +1,15 @@
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  // apiVersion is omitted to use the default version pinned by the SDK types
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_build_key', {
   typescript: true,
 });
 
 export async function POST(request: Request) {
+  if (!process.env.STRIPE_SECRET_KEY) {
+    return NextResponse.json({ error: 'Stripe Secret Key missing' }, { status: 500 });
+  }
+
   try {
     const { amount, cartItems, utmParams } = await request.json();
 

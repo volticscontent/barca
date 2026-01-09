@@ -2,13 +2,18 @@ import { NextResponse } from 'next/server';
 import { headers } from 'next/headers';
 import Stripe from 'stripe';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_build_key', {
   typescript: true,
 });
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
 export async function POST(request: Request) {
+  if (!process.env.STRIPE_SECRET_KEY) {
+      console.error('Stripe Secret Key missing');
+      return NextResponse.json({ error: 'Server Configuration Error' }, { status: 500 });
+  }
+
   try {
     const body = await request.text();
     const signature = (await headers()).get('stripe-signature');

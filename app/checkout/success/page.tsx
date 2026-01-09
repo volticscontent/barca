@@ -2,12 +2,12 @@
 
 import Link from "next/link";
 import { CheckCircle } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { loadStripe } from "@stripe/stripe-js";
 import * as fpixel from "../../lib/fpixel";
 
-export default function SuccessPage() {
+function SuccessContent() {
   const searchParams = useSearchParams();
   const [tracked, setTracked] = useState(false);
   const [orderItems, setOrderItems] = useState<{ id: string, name: string, qty: number, size?: string }[]>([]);
@@ -93,7 +93,7 @@ export default function SuccessPage() {
     };
 
     trackPurchase();
-  }, [tracked]);
+  }, [tracked, searchParams]);
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
@@ -131,5 +131,13 @@ export default function SuccessPage() {
         </Link>
       </div>
     </div>
+  );
+}
+
+export default function SuccessPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+      <SuccessContent />
+    </Suspense>
   );
 }

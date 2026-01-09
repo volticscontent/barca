@@ -2,11 +2,16 @@ import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import pool from '../../lib/db';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_build_key', {
   typescript: true,
 });
 
 export async function POST(request: Request) {
+  if (!process.env.STRIPE_SECRET_KEY) {
+    console.error('Stripe Secret Key missing');
+    return NextResponse.json({ error: 'Server Configuration Error' }, { status: 500 });
+  }
+
   try {
     const { payment_intent_client_secret } = await request.json();
 

@@ -62,7 +62,7 @@ export const SuccessNotification = ({ show, onClose }: { show: boolean; onClose:
           : "translate-x-full opacity-0 scale-95"
       }`}
     >
-      <div className="bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-4 rounded-xl shadow-2xl flex items-center space-x-3 border border-green-400 backdrop-blur-sm">
+      <div className="bg-linear-to-r from-green-500 to-green-600 text-white px-6 py-4 rounded-xl shadow-2xl flex items-center space-x-3 border border-green-400 backdrop-blur-sm">
         <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center">
           <DollarSign className="h-8 w-8 text-green-500 animate-bounce" />
         </div>        <div>
@@ -421,11 +421,23 @@ export const CompleteHeader = () => {
       {/* Logo Section */}
       {/* USP Bar */}
       <div className="w-full bg-[#ffffff] border-b border-gray-100 py-3">
-        <div className="flex justify-center">
+        <div className="flex justify-between items-center px-4">
           <a href="#" aria-label="Homepage" className="flex items-center hover:opacity-80 transition-opacity duration-200" data-auto-id="logo">
              {/* Usando um placeholder de texto se a logo não estiver disponível, ou a logo svg */}
              <Image src="images/svgs/logo.svg" alt="PSG STORE" width={100} height={50} />
           </a>
+          <Image src="/images/contentProduct/nike.png" alt="PSG STORE" className="bg-black" width={50} height={50} />
+
+        </div>
+        
+      </div>
+      <div className="flex justify-center">
+        <div className="w-full max-w-[1200px] bg-[#0d3650] px-4">
+          <div className="flex justify-center items-center">
+           <span className="text-[12px] text-white font-bold uppercase py-3">
+            Répondez à toutes les questions max 100 €.
+           </span>
+          </div>
         </div>
       </div>
 
@@ -440,12 +452,12 @@ export const DiscountProgressBar = ({ correctAnswers }: { correctAnswers: number
   const progressPercentage = (parseFloat(discount) / maxDiscount) * 100;
 
   return (
-    <div className="bg-gray-50 p-4 rounded-lg">
-      <div className="flex justify-between items-center">
-        <span className="text-sm text-gray-600">Progression de la réduction :</span>
+    <div className="bg-gray-50 p-4 rounded-lg mb-6 border border-gray-100 max-w-md mx-auto w-full">
+      <div className="flex justify-between items-center mb-2">
+        <span className="text-sm text-gray-600 font-medium">Progression de la réduction :</span>
         <div>
-        <span className="font-semibold">€{discount} /</span>
-        <span className="font-semibold text-red-600">€{maxDiscount}</span>
+        <span className="font-semibold text-gray-900">€{discount} /</span>
+        <span className="font-semibold text-[#32a11c]">€{maxDiscount}</span>
         </div>
       </div>
       <div 
@@ -453,11 +465,11 @@ export const DiscountProgressBar = ({ correctAnswers }: { correctAnswers: number
         aria-valuemin={0} 
         aria-valuenow={progressPercentage}
         role="progressbar" 
-        className="relative h-4 w-full overflow-hidden rounded-full bg-gray-200 mt-2"
+        className="relative h-4 w-full overflow-hidden rounded-full bg-gray-200"
       >
         <div 
           className={`h-full transition-all duration-500 ease-out ${styles.discountProgressBar}`}
-          style={{ width: `${progressPercentage}%`, backgroundColor: '#090e11' }}
+          style={{ width: `${progressPercentage}%` }}
         />
       </div>
     </div>
@@ -552,17 +564,7 @@ export const QuizQuestionScreen = ({
 
       <div className="w-full max-w-2xl mx-auto space-y-18">
         <div className="mb-6 animate-fadeIn">
-          <div className="flex justify-center my-6">
-            <div className="text-center">
-              <p className="text-sm text-gray-600">Votre réduction cumulée</p>
-              <p className={`text-2xl font-bold text-[#1bca32] transform transition-all duration-500 ${
-                correctAnswers > 0 ? 'scale-125 animate-pulse' : ''
-              }`}>
-                €{(Math.min(correctAnswers * 20, 100)).toFixed(2)}
-              </p>
-              <p className="text-xs text-gray-500">Bonus de participation</p>
-            </div>
-          </div>
+            <DiscountProgressBar correctAnswers={correctAnswers} />
         </div>
         
         <div className="progress-container">

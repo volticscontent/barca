@@ -32,7 +32,7 @@ export default function WinnersBadgeCarousel() {
             <div className="relative aspect-square bg-gray-100 rounded-sm overflow-hidden mb-3">
               <Image
                 src={src}
-                alt="Badge des Champions"
+                alt="Winners Badge"
                 fill
                 className="object-cover object-center group-hover:scale-105 transition-transform duration-300"
               />

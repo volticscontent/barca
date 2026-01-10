@@ -2,8 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { loadStripe } from "@stripe/stripe-js";
-import { Elements } from "@stripe/react-stripe-js";
-import CheckoutForm from "../components/CheckoutForm";
+import { EmbeddedCheckoutProvider, EmbeddedCheckout } from "@stripe/react-stripe-js";
 import { useCart } from "../context/CartContext";
 import { Loader2, Lock, ArrowLeft } from "lucide-react";
 import Footer from "../components/Footer";
@@ -14,7 +13,7 @@ import { getUTMParams } from "../lib/utmNavigation";
 // Make sure to call loadStripe outside of a component’s render to avoid
 // recreating the Stripe object on every render.
 const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
-const stripePromise = publishableKey ? loadStripe(publishableKey, { locale: 'fr' }) : null;
+const stripePromise = publishableKey ? loadStripe(publishableKey) : null;
 
 export default function CheckoutPage() {
   const [clientSecret, setClientSecret] = useState("");
@@ -44,54 +43,37 @@ export default function CheckoutPage() {
     if (totalAmount > 0 && !clientSecret) {
       const utmParams = getUTMParams();
       
-      fetch("/api/create-payment-intent", {
+      fetch("/api/create-checkout-session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
-          amount: totalAmount,
           cartItems: cartItems,
           utmParams
         }),
       })
         .then(async (res) => {
-            if (!res.ok) {
-                const errorText = await res.text();
-                console.error("API Error Status:", res.status);
-                console.error("API Error Body:", errorText);
-                try {
-                    return JSON.parse(errorText);
-                } catch {
-                    throw new Error(`API failed with status ${res.status}: ${errorText}`);
-                }
-            }
-            return res.json();
+          const data = await res.json();
+          if (!res.ok) {
+            throw new Error(data.error || 'Failed to create checkout session');
+          }
+          return data;
         })
         .then((data) => {
           if (data.clientSecret) {
             setClientSecret(data.clientSecret);
           } else {
-            console.error("No clientSecret returned in data:", data);
+            console.error("No clientSecret returned", data);
           }
         })
         .catch((err) => {
-           console.error("Error creating payment intent:", err);
+           console.error("Error creating checkout session:", err);
+           // Optional: Show error to user via UI
         });
     }
   }, [totalAmount, clientSecret, cartItems]);
 
-  const appearance = {
-    theme: 'stripe' as const,
-    variables: {
-      colorPrimary: '#003055',
-      fontFamily: 'system-ui, sans-serif',
-      borderRadius: '2px',
-    },
-  };
-  
   const options = {
     clientSecret,
-    appearance,
-    locale: 'fr' as const,
   };
 
   if (cartItems.length === 0) {
@@ -178,10 +160,6 @@ export default function CheckoutPage() {
                                 <span>-€{totalSavings.toFixed(2)}</span>
                             </div>
                         )}
-                        <div className="flex justify-between text-xl pb-8 font-medium font-sans-serif text-[#1b1b1b] pt-2 border-t border-gray-100 mt-2">
-                            <span className="font-bold">Total</span>
-                            <span>€{totalAmount.toFixed(2)}</span>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -190,9 +168,9 @@ export default function CheckoutPage() {
             <div className="lg:col-span-7 lg:order-1">
 
                 {clientSecret && stripePromise ? (
-                    <Elements options={options} stripe={stripePromise}>
-                        <CheckoutForm amount={totalAmount} cartItems={cartItems} />
-                    </Elements>
+                    <EmbeddedCheckoutProvider stripe={stripePromise} options={options}>
+                        <EmbeddedCheckout />
+                    </EmbeddedCheckoutProvider>
                 ) : (
                     <div className="flex flex-col items-center justify-center p-12 bg-white rounded-lg shadow-sm border border-gray-100 min-h-[300px]">
                         <Loader2 className="h-10 w-10 text-primary animate-spin mb-4" />
@@ -202,7 +180,6 @@ export default function CheckoutPage() {
             </div>
         </div>
       </main>
-      <Footer />
     </div>
   );
 }

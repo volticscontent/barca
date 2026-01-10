@@ -39,14 +39,22 @@ export async function POST(request: Request) {
 
     // Handle the event
     switch (event.type) {
+      case 'checkout.session.completed':
+        const session = event.data.object as Stripe.Checkout.Session;
+        console.log(`✅ Checkout Session completed: ${session.id}`);
+        await saveOrderFromSession(session);
+        break;
+
+      case 'checkout.session.async_payment_succeeded':
+        const asyncSession = event.data.object as Stripe.Checkout.Session;
+        console.log(`✅ Async Payment succeeded: ${asyncSession.id}`);
+        await saveOrderFromSession(asyncSession);
+        break;
+
       case 'payment_intent.succeeded':
         const paymentIntent = event.data.object as Stripe.PaymentIntent;
         console.log(`💰 PaymentIntent status: ${paymentIntent.status}`);
-        console.log(`💰 PaymentIntent ID: ${paymentIntent.id}`);
-        
-        // Logica principal de sucesso:
-        // - Enviar email de confirmação
-        // - Atualizar banco de dados
+        // Logic handled by checkout session usually, but keep for fallback if needed
         break;
 
       case 'payment_intent.payment_failed':

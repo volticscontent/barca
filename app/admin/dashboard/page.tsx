@@ -55,7 +55,7 @@ export default function AdminDashboard() {
       <nav className="bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center sticky top-0 z-10">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-bold">L</div>
-          <span className="text-xl font-bold text-gray-800">Administration des Leads</span>
+          <span className="text-xl font-bold text-gray-800">Leads Admin</span>
         </div>
         <button 
           onClick={() => {
@@ -66,44 +66,44 @@ export default function AdminDashboard() {
           }}
           className="text-gray-500 hover:text-red-600 transition-colors flex items-center gap-2 text-sm font-medium"
         >
-          <LogOut size={18} /> Déconnexion
+          <LogOut size={18} /> Sair
         </button>
       </nav>
 
       <main className="max-w-7xl mx-auto p-6">
         <div className="flex justify-between items-end mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Ventes & Leads</h1>
-            <p className="text-gray-500 mt-1">Gérez et visualisez les dernières transactions.</p>
+            <h1 className="text-3xl font-bold text-gray-900">Vendas & Leads</h1>
+            <p className="text-gray-500 mt-1">Gerencie e visualize as últimas transações.</p>
           </div>
           <button 
             onClick={fetchLeads}
             className="flex items-center gap-2 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition-all shadow-sm"
           >
-            <RefreshCcw size={16} className={loading ? "animate-spin" : ""} /> Actualiser
+            <RefreshCcw size={16} className={loading ? "animate-spin" : ""} /> Atualizar
           </button>
         </div>
 
         {/* Stats Cards (Mockup) */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-            <h3 className="text-gray-500 text-sm font-medium uppercase tracking-wider">Total des Ventes</h3>
+            <h3 className="text-gray-500 text-sm font-medium uppercase tracking-wider">Total Vendas</h3>
             <p className="text-3xl font-bold text-gray-900 mt-2">{leads.length}</p>
           </div>
           <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-             <h3 className="text-gray-500 text-sm font-medium uppercase tracking-wider">Revenus (Est.)</h3>
+             <h3 className="text-gray-500 text-sm font-medium uppercase tracking-wider">Receita (Est.)</h3>
              <p className="text-3xl font-bold text-emerald-600 mt-2">
                 € {leads.reduce((acc, lead) => acc + parseFloat(lead.amount || '0'), 0).toFixed(2)}
              </p>
           </div>
           <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-            <h3 className="text-gray-500 text-sm font-medium uppercase tracking-wider">Statut</h3>
+            <h3 className="text-gray-500 text-sm font-medium uppercase tracking-wider">Status</h3>
             <div className="flex gap-2 mt-2">
                 <span className="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full font-bold">
-                    {leads.filter(l => l.status === 'succeeded').length} Succès
+                    {leads.filter(l => l.status === 'succeeded').length} Sucesso
                 </span>
                 <span className="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded-full font-bold">
-                    {leads.filter(l => l.status !== 'succeeded').length} Autres
+                    {leads.filter(l => l.status !== 'succeeded').length} Outros
                 </span>
             </div>
           </div>
@@ -115,33 +115,33 @@ export default function AdminDashboard() {
                 <table className="w-full text-left border-collapse">
                     <thead>
                         <tr className="bg-gray-50 border-b border-gray-200 text-xs uppercase text-gray-500 font-semibold tracking-wider">
-                            <th className="px-6 py-4">Date</th>
-                            <th className="px-6 py-4">Client</th>
+                            <th className="px-6 py-4">Data</th>
+                            <th className="px-6 py-4">Cliente</th>
                             <th className="px-6 py-4">Email</th>
-                            <th className="px-6 py-4">Montant</th>
-                            <th className="px-6 py-4">Statut</th>
-                            <th className="px-6 py-4">Origine (UTM)</th>
+                            <th className="px-6 py-4">Valor</th>
+                            <th className="px-6 py-4">Status</th>
+                            <th className="px-6 py-4">Origem (UTM)</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100">
                         {leads.length === 0 && !loading && (
                             <tr>
                                 <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
-                                    Aucun lead trouvé.
+                                    Nenhum lead encontrado.
                                 </td>
                             </tr>
                         )}
                         {loading && leads.length === 0 && (
                              <tr>
                                 <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
-                                    Chargement...
+                                    Carregando...
                                 </td>
                             </tr>
                         )}
                         {leads.map((lead) => (
                             <tr key={lead.id} className="hover:bg-gray-50 transition-colors">
                                 <td className="px-6 py-4 text-sm text-gray-600 whitespace-nowrap">
-                                    {new Date(lead.created_at).toLocaleDateString('fr-FR')} <span className="text-gray-400 text-xs">{new Date(lead.created_at).toLocaleTimeString('fr-FR')}</span>
+                                    {new Date(lead.created_at).toLocaleDateString('pt-BR')} <span className="text-gray-400 text-xs">{new Date(lead.created_at).toLocaleTimeString('pt-BR')}</span>
                                 </td>
                                 <td className="px-6 py-4 text-sm font-medium text-gray-900">
                                     {lead.customer_name || 'N/A'}

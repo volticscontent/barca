@@ -115,16 +115,16 @@ export default function CheckoutForm({ amount, cartItems }: CheckoutFormProps) {
     stripe.retrievePaymentIntent(clientSecret).then(({ paymentIntent }) => {
       switch (paymentIntent?.status) {
         case "succeeded":
-          setMessage("Paiement réussi !");
+          setMessage("Payment succeeded!");
           break;
         case "processing":
-          setMessage("Votre paiement est en cours de traitement.");
+          setMessage("Your payment is processing.");
           break;
         case "requires_payment_method":
-          setMessage("Votre paiement a échoué, veuillez réessayer.");
+          setMessage("Your payment was not successful, please try again.");
           break;
         default:
-          setMessage("Une erreur est survenue.");
+          setMessage("Something went wrong.");
           break;
       }
     });
@@ -238,7 +238,6 @@ export default function CheckoutForm({ amount, cartItems }: CheckoutFormProps) {
 
   const paymentElementOptions = {
     layout: "tabs" as const,
-    business: { name: "PSG Store" },
   };
 
   return (

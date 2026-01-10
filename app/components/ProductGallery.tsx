@@ -47,7 +47,7 @@ export default function ProductGallery() {
             >
               <Image 
                 src={src} 
-                alt={`Miniature ${index + 1}`}
+                alt={`Thumbnail ${index + 1}`}
                 fill
                 className="object-cover object-center"
                 sizes="(max-width: 1024px) 64px, 96px"
@@ -60,7 +60,7 @@ export default function ProductGallery() {
         <div className="relative flex-1 bg-gray-100 rounded-sm overflow-hidden h-full cursor-zoom-in group" onClick={() => setIsZoomOpen(true)}>
           <Image 
             src={mainImage} 
-            alt="Vue principale du kit domicile PSG"
+            alt="PSG Home Kit Main View"
             fill
             className="object-cover object-center group-hover:scale-105 transition-transform duration-500"
             sizes="(min-width: 1024px) 800px, 100vw"
@@ -100,7 +100,7 @@ export default function ProductGallery() {
           <div className="relative w-full h-full lg:w-[90vw] lg:h-[90vh] p-4">
             <Image 
               src={mainImage} 
-              alt="Vue zoomée" 
+              alt="Zoom View" 
               fill 
               className="object-contain" 
               quality={100}

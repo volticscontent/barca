@@ -19,9 +19,39 @@ function SuccessContent() {
     const trackPurchase = async () => {
       // Use useSearchParams hook
       const paymentIntentClientSecret = searchParams.get("payment_intent_client_secret");
-      const paymentIntentId = searchParams.get("payment_intent");
+      const sessionId = searchParams.get("session_id");
 
-      if (paymentIntentClientSecret) {
+      if (sessionId) {
+          // Handle Checkout Session (Embedded/Hosted)
+          fetch(`/api/retrieve-checkout-session?session_id=${sessionId}`)
+              .then(res => res.json())
+              .then(data => {
+                  if (data.status === 'complete' || data.status === 'open') { // Open might be async payment pending
+                       setAmount(data.amount_total / 100);
+                       // We might not get items details easily here without expanding line_items on server
+                       // But we can just show success.
+                       
+                       // Pixel Tracking
+                       const eventID = sessionStorage.getItem('purchase_event_id') || '';
+                       const email = data.customer_email || sessionStorage.getItem('user_email') || '';
+                       
+                       const userData = fpixel.normalizeData({
+                            email: email
+                       });
+
+                       fpixel.event("Purchase", {
+                            value: data.amount_total / 100,
+                            currency: data.currency.toUpperCase(),
+                            content_type: "product",
+                       }, eventID, userData);
+                       
+                       setTracked(true);
+                  }
+              })
+              .catch(err => console.error("Error retrieving session", err));
+          
+      } else if (paymentIntentClientSecret) {
+         // Legacy Payment Element Flow
          // 1. Call Backend API immediately (Critical for UTMify/DB)
          // We don't wait for Stripe client-side retrieval to ensure this fires ASAP.
          // 'keepalive: true' ensures request completes even if user closes tab.
@@ -136,7 +166,7 @@ function SuccessContent() {
 
 export default function SuccessPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Chargement...</div>}>
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
       <SuccessContent />
     </Suspense>
   );

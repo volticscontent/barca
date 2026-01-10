@@ -3,31 +3,31 @@ import Image from 'next/image';
 const RELATED_PRODUCTS = [
   {
     id: 1,
-    name: 'Maillot Stadium Domicile PSG Nike 2025-26',
+    name: 'PSG Nike Home Stadium Shirt 2025-26',
     price: '€99.99',
     image: '/images/otherProducts/psg-nike-home-stadium-shirt-2025-26.jpg'
   },
   {
     id: 2,
-    name: 'Maillot Match Fourth PSG Jordan Dri-FIT ADV 2025-26',
+    name: 'PSG Jordan Fourth Dri-FIT ADV Match Shirt 2025-26',
     price: '€149.99',
     image: '/images/otherProducts/psg-jordan-fourth-dri-fit-adv-match-shirt-2025-26.jpg'
   },
   {
     id: 3,
-    name: 'Maillot Match Domicile PSG Nike Dri-FIT ADV 2025-26 avec Flocage Coupe',
+    name: 'PSG Nike Dri-FIT ADV Home Match Shirt 2025-26 with Cup Printing',
     price: '€171.99',
     image: '/images/otherProducts/psg-nike-dri-fit-adv-home-match-shirt-2025-26-with.jpg'
   },
   {
     id: 4,
-    name: 'Maillot Stadium Third PSG Nike 2025-26',
+    name: 'PSG Nike Third Stadium Shirt 2025-26',
     price: '€99.99',
     image: '/images/otherProducts/psg-nike-third-stadium-shirt-2025-26.jpg'
   },
   {
     id: 5,
-    name: 'Maillot Stadium Extérieur PSG Nike 2025-26',
+    name: 'PSG Nike Away Stadium Shirt 2025-26',
     price: '€99.99',
     image: '/images/otherProducts/psg-nike-away-stadium-shirt-2025-26.jpg'
   }
@@ -36,7 +36,7 @@ const RELATED_PRODUCTS = [
 export default function RelatedProducts() {
   return (
     <div className="pt-8">
-      <h2 className="text-xl font-bold text-[#1b1b1b] mb-6 px-4 lg:px-0">Vous aimerez peut-être aussi</h2>
+      <h2 className="text-xl font-bold text-[#1b1b1b] mb-6 px-4 lg:px-0">You May Also Like</h2>
       
       {/* Mobile Carousel / Desktop Grid */}
       <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 px-4 lg:mx-0 lg:grid lg:grid-cols-5 lg:gap-6 lg:pb-0 lg:overflow-visible scrollbar-hide">

@@ -160,7 +160,7 @@ export default function CartDrawer() {
               }}
               className="w-full bg-primary text-white h-12 rounded-sm font-bold hover:bg-[#003055] transition-colors shadow-sm uppercase tracking-wide"
             >
-              Paiement
+              Commander
             </button>
           </div>
         )}

@@ -109,7 +109,7 @@ export default function PriceAnchoring({ onBuyClick }: PriceAnchoringProps) {
             className="w-full bg-linear-to-r from-[#036b40] to-green-600 hover:bg-red-700 text-white font-bold py-4 px-6 rounded-xl shadow-lg transform transition hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2"
           >
             <span>Aller au magasin</span>
-            <Image src="/images/header/aspire-icon-aspire-cart-icon.svg" alt="PSG STORE" className="text-white" width={20} height={20} />
+            <Image src="/images/header/aspire-icon-aspire-cart-icon copy.svg" alt="PSG STORE" className="text-white" width={20} height={20} />
           </button>
           
           <p className="text-xs text-center text-gray-400 mt-4">

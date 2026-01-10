@@ -14,13 +14,13 @@ export default function SizeSelector({ selectedSize, onSelectSize }: { selectedS
       <SizeChartModal isOpen={isSizeChartOpen} onClose={() => setIsSizeChartOpen(false)} />
       
       <div className="flex justify-between items-center mb-3">
-        <span className="text-sm font-bold text-[#1b1b1b]">Size</span>
+        <span className="text-sm font-bold text-[#1b1b1b]">Taille</span>
         <button 
           onClick={() => setIsSizeChartOpen(true)}
           className="flex items-center gap-1 text-xs font-bold text-gray-500 hover:text-primary underline underline-offset-2 transition-colors"
         >
           <Ruler className="w-3 h-3" />
-          Size Chart
+          Guide des tailles
         </button>
       </div>
       
@@ -44,7 +44,7 @@ export default function SizeSelector({ selectedSize, onSelectSize }: { selectedS
       {selectedSize && (
         <p className="mt-2 text-sm text-primary font-medium flex items-center gap-1">
           <span className="w-2 h-2 rounded-full bg-primary"></span>
-          Size {selectedSize} selected
+          Taille {selectedSize} sélectionnée
         </p>
       )}
     </div>

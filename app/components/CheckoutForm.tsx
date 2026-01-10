@@ -4,13 +4,14 @@ import React, { useState, useEffect, useRef } from "react";
 import {
   PaymentElement,
   AddressElement,
+  ExpressCheckoutElement,
   useStripe,
   useElements
 } from "@stripe/react-stripe-js";
 import { Lock, Mail, Phone } from "lucide-react";
 import Image from "next/image";
 import { CartItem } from "../context/CartContext";
-import { StripeAddressElementChangeEvent } from "@stripe/stripe-js";
+import { StripeAddressElementChangeEvent, StripeExpressCheckoutElementConfirmEvent } from "@stripe/stripe-js";
 import * as fpixel from "../lib/fpixel";
 
 interface CheckoutFormProps {
@@ -114,16 +115,16 @@ export default function CheckoutForm({ amount, cartItems }: CheckoutFormProps) {
     stripe.retrievePaymentIntent(clientSecret).then(({ paymentIntent }) => {
       switch (paymentIntent?.status) {
         case "succeeded":
-          setMessage("Payment succeeded!");
+          setMessage("Paiement réussi !");
           break;
         case "processing":
-          setMessage("Your payment is processing.");
+          setMessage("Votre paiement est en cours de traitement.");
           break;
         case "requires_payment_method":
-          setMessage("Your payment was not successful, please try again.");
+          setMessage("Votre paiement a échoué, veuillez réessayer.");
           break;
         default:
-          setMessage("Something went wrong.");
+          setMessage("Une erreur est survenue.");
           break;
       }
     });
@@ -207,16 +208,37 @@ export default function CheckoutForm({ amount, cartItems }: CheckoutFormProps) {
     });
 
     if (error.type === "card_error" || error.type === "validation_error") {
-      setMessage(error.message || "An unexpected error occurred.");
+      setMessage(error.message || "Une erreur inattendue est survenue.");
     } else {
-      setMessage("An unexpected error occurred.");
+      setMessage("Une erreur inattendue est survenue.");
     }
 
     setIsLoading(false);
   };
 
+  const handleExpressConfirm = async (event: StripeExpressCheckoutElementConfirmEvent) => {
+    if (!stripe || !elements) {
+      return;
+    }
+
+    setIsLoading(true);
+
+    const { error } = await stripe.confirmPayment({
+      elements,
+      confirmParams: {
+        return_url: `${window.location.origin}/checkout/success`,
+      },
+    });
+
+    if (error) {
+      setMessage(error.message || "Une erreur inattendue est survenue.");
+      setIsLoading(false);
+    }
+  };
+
   const paymentElementOptions = {
     layout: "tabs" as const,
+    business: { name: "PSG Store" },
   };
 
   return (
@@ -229,6 +251,11 @@ export default function CheckoutForm({ amount, cartItems }: CheckoutFormProps) {
         width={32}
         height={32}
       />
+      
+      <div className="mb-6">
+        <ExpressCheckoutElement onConfirm={handleExpressConfirm} />
+      </div>
+
       <div className="mb-6">
         <h3 className="text-sm font-bold text-gray-700 mb-3">Vos coordonnées</h3>
         <div className="space-y-3">

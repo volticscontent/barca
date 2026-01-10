@@ -14,7 +14,7 @@ import { getUTMParams } from "../lib/utmNavigation";
 // Make sure to call loadStripe outside of a component’s render to avoid
 // recreating the Stripe object on every render.
 const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
-const stripePromise = publishableKey ? loadStripe(publishableKey) : null;
+const stripePromise = publishableKey ? loadStripe(publishableKey, { locale: 'fr' }) : null;
 
 export default function CheckoutPage() {
   const [clientSecret, setClientSecret] = useState("");
@@ -53,16 +53,28 @@ export default function CheckoutPage() {
           utmParams
         }),
       })
-        .then((res) => res.json())
+        .then(async (res) => {
+            if (!res.ok) {
+                const errorText = await res.text();
+                console.error("API Error Status:", res.status);
+                console.error("API Error Body:", errorText);
+                try {
+                    return JSON.parse(errorText);
+                } catch {
+                    throw new Error(`API failed with status ${res.status}: ${errorText}`);
+                }
+            }
+            return res.json();
+        })
         .then((data) => {
           if (data.clientSecret) {
             setClientSecret(data.clientSecret);
           } else {
-            console.error("No clientSecret returned", data);
+            console.error("No clientSecret returned in data:", data);
           }
         })
         .catch((err) => {
-           console.error("Error creating payment intent", err);
+           console.error("Error creating payment intent:", err);
         });
     }
   }, [totalAmount, clientSecret, cartItems]);
@@ -79,6 +91,7 @@ export default function CheckoutPage() {
   const options = {
     clientSecret,
     appearance,
+    locale: 'fr' as const,
   };
 
   if (cartItems.length === 0) {

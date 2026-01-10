@@ -147,11 +147,11 @@ export default function CartDrawer() {
         {cartItems.length > 0 && (
           <div className="p-4 border-t border-gray-100 bg-gray-50">
             <div className="flex justify-between items-center mb-4">
-              <span className="text-gray-600 font-medium">Subtotal</span>
+              <span className="text-gray-600 font-medium">Sous-total</span>
               <span className="text-lg font-bold text-[#1b1b1b]">€{cartTotal.toFixed(2)}</span>
             </div>
             <p className="text-xs text-gray-500 mb-4 text-center">
-              Shipping and taxes calculated at checkout.
+              Frais de port et taxes calculés lors du paiement.
             </p>
             <button 
               onClick={() => {
@@ -160,7 +160,7 @@ export default function CartDrawer() {
               }}
               className="w-full bg-primary text-white h-12 rounded-sm font-bold hover:bg-[#003055] transition-colors shadow-sm uppercase tracking-wide"
             >
-              Checkout
+              Paiement
             </button>
           </div>
         )}

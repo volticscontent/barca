@@ -9,8 +9,8 @@ export default function Footer() {
           alt="Piska Footer" 
           width={1920} 
           height={800} 
-          className="w-full h-auto object-cover"
-          priority
+          className="w-[140%] h-auto object-cover border-white"
+          priority={true}
         /> 
       </div> 
     </footer>

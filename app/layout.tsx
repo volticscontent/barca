@@ -10,8 +10,8 @@ import { Suspense } from "react";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "PSG Nike Dri-FIT ADV Home Match Shirt 2025-26",
-  description: "Official Paris Saint-Germain Nike Dri-FIT ADV Match Home Shirt 2025/26. Authentic design, advanced breathability.",
+  title: "Maillot Officiel PSG Nike Dri-FIT ADV Domicile 2025-26",
+  description: "Maillot Officiel Paris Saint-Germain Nike Dri-FIT ADV Domicile 2025/26. Design authentique, respirabilité avancée.",
 };
 
 declare global {
@@ -26,7 +26,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="fr">
       <head>
         <Script id="utmify-pixel" strategy="afterInteractive">
           {`

@@ -27,24 +27,24 @@ export default function Header() {
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex gap-8 items-center">
             <Link href="#" className="text-base font-black text-[#1b1b1b] hover:text-primary uppercase tracking-wide transition-colors">JORDAN</Link>
-            <Link href="#" className="text-base font-bold text-[#1b1b1b] hover:text-primary transition-colors">Kits</Link>
-            <Link href="#" className="text-base font-bold text-[#1b1b1b] hover:text-primary transition-colors">Training</Link>
-            <Link href="#" className="text-base font-bold text-[#1b1b1b] hover:text-primary transition-colors">More</Link>
+            <Link href="#" className="text-base font-bold text-[#1b1b1b] hover:text-primary transition-colors">Maillots</Link>
+            <Link href="#" className="text-base font-bold text-[#1b1b1b] hover:text-primary transition-colors">Entraînement</Link>
+            <Link href="#" className="text-base font-bold text-[#1b1b1b] hover:text-primary transition-colors">Plus</Link>
           </nav>
 
           {/* Icons Area */}
           <div className="flex items-center gap-2">
             <button className="p-2 hover:bg-gray-100 rounded-full">
-              <Image src="/images/header/aspire-icon-aspire-search-icon.svg" alt="Search" width={24} height={24} />
+              <Image src="/images/header/aspire-icon-aspire-search-icon.svg" alt="Recherche" width={24} height={24} />
             </button>
             <button className="p-2 hover:bg-gray-100 rounded-full">
-              <Image src="/images/header/aspire-icon-aspire-account-icon.svg" alt="Account" width={24} height={24} />
+              <Image src="/images/header/aspire-icon-aspire-account-icon.svg" alt="Compte" width={24} height={24} />
             </button>
             <button 
               onClick={toggleCart}
               className="p-2 hover:bg-gray-100 rounded-full relative transition-colors"
             >
-              <Image src="/images/header/aspire-icon-aspire-cart-icon.svg" alt="Cart" width={24} height={24} />
+              <Image src="/images/header/aspire-icon-aspire-cart-icon.svg" alt="Panier" width={24} height={24} />
               {cartCount > 0 && (
                 <span className="absolute top-1 right-0.5 bg-primary text-white text-[10px] font-bold px-2 py-0.1 rounded-full animate-in zoom-in duration-200">
                   {cartCount}
@@ -57,7 +57,7 @@ export default function Header() {
       {/* Promo Bar (White/Gray) */}
       <div className="border-y border-[#b4b4b4] text-[#1b1b1b] text-center text-[14px] py-2 flex items-center justify-center gap-2">
         <Image src="/images/header/svgpromo.png" alt="Promo" width={24} height={24} />
-        <span>Up to 66,67 % Off Selected Lines</span>
+        <span>Jusqu&apos;à 66,67 % de réduction sur une sélection d&apos;articles</span>
       </div>
       <div className="text-[#ebebeb] bg-[#163d61] text-center text-[16px] py-2 flex items-center justify-center gap-2">
         <span>PROMOTION DES CHAMPIONS 2026</span>

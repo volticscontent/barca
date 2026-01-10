@@ -15,7 +15,7 @@ export default function SizeChartModal({ isOpen, onClose }: SizeChartModalProps)
       <div className="bg-white w-full max-w-2xl rounded-sm shadow-xl overflow-hidden relative animate-in zoom-in-95 duration-200">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-100">
-          <h2 className="text-lg font-bold text-[#1b1b1b]">Men&apos;s Tops Size Chart</h2>
+          <h2 className="text-lg font-bold text-[#1b1b1b]">Guide des Tailles - Hauts Homme</h2>
           <button 
             onClick={onClose}
             className="p-2 hover:bg-gray-100 rounded-full transition-colors"
@@ -27,17 +27,17 @@ export default function SizeChartModal({ isOpen, onClose }: SizeChartModalProps)
         {/* Content */}
         <div className="p-6 overflow-y-auto max-h-[70vh]">
           <p className="text-sm text-gray-600 mb-6">
-            Use this chart to find your perfect fit. If you&apos;re on the borderline between two sizes, order the smaller size for a tighter fit or the larger size for a looser fit.
+            Utilisez ce tableau pour trouver votre taille idéale. Si vous êtes entre deux tailles, commandez la taille inférieure pour une coupe plus ajustée ou la taille supérieure pour une coupe plus ample.
           </p>
 
           <div className="overflow-x-auto">
             <table className="w-full text-sm text-left">
               <thead className="text-xs text-gray-500 uppercase bg-gray-50">
                 <tr>
-                  <th className="px-4 py-3 font-bold">Size</th>
-                  <th className="px-4 py-3 font-bold">Chest (cm)</th>
-                  <th className="px-4 py-3 font-bold">Waist (cm)</th>
-                  <th className="px-4 py-3 font-bold">Hips (cm)</th>
+                  <th className="px-4 py-3 font-bold">Taille</th>
+                  <th className="px-4 py-3 font-bold">Poitrine (cm)</th>
+                  <th className="px-4 py-3 font-bold">Taille (cm)</th>
+                  <th className="px-4 py-3 font-bold">Hanches (cm)</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
@@ -82,11 +82,11 @@ export default function SizeChartModal({ isOpen, onClose }: SizeChartModalProps)
           </div>
           
           <div className="mt-6 p-4 bg-gray-50 rounded-sm">
-             <h3 className="font-bold text-sm mb-2">How to Measure</h3>
+             <h3 className="font-bold text-sm mb-2">Comment prendre les mesures</h3>
              <ul className="list-disc list-inside text-xs text-gray-600 space-y-1">
-               <li><strong>Chest:</strong> Measure around the fullest part of your chest, keeping the tape horizontal.</li>
-               <li><strong>Waist:</strong> Measure around the narrowest part (typically where your body bends side to side), keeping the tape horizontal.</li>
-               <li><strong>Hips:</strong> Measure around the fullest part of your hips, keeping the tape horizontal.</li>
+               <li><strong>Poitrine :</strong> Mesurez autour de la partie la plus large de votre poitrine, en gardant le ruban horizontal.</li>
+               <li><strong>Taille :</strong> Mesurez autour de la partie la plus étroite (généralement là où votre corps se plie d'un côté à l'autre), en gardant le ruban horizontal.</li>
+               <li><strong>Hanches :</strong> Mesurez autour de la partie la plus large de vos hanches, en gardant le ruban horizontal.</li>
              </ul>
           </div>
         </div>

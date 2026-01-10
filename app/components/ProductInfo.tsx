@@ -146,34 +146,34 @@ export default function ProductInfo() {
       <div className="">
         <AccordionItem title="Description" defaultOpen={true}>
           <p>
-            More legendary than ever, Paris Saint-Germain&apos;s iconic home kit is reimagined with a midnight blue base, vibrant red and white accents, and a lattice-inspired graphic that pays tribute to the city&apos;s architectural heritage. This design embodies the club&apos;s Parisian identity and legacy. From the streets of Greater Paris to the stands of Parc des Princes, this jersey is more than just a kit: it&apos;s the uniform of a generation that embraces football as both culture and commitment.
+            Plus légendaire que jamais, le maillot domicile emblématique du Paris Saint-Germain est réinventé avec une base bleu nuit, des accents rouge et blanc vibrants, et un graphisme inspiré d'un treillis qui rend hommage à l'héritage architectural de la ville. Ce design incarne l'identité et l'héritage parisiens du club. Des rues du Grand Paris aux tribunes du Parc des Princes, ce maillot est plus qu'une simple tenue : c'est l'uniforme d'une génération qui embrasse le football à la fois comme une culture et un engagement.
           </p>
         </AccordionItem>
 
         <AccordionItem title="Détails">
           <ul className="list-disc list-outside ml-4 space-y-1 marker:text-gray-500">
-            <li>Product ID: 202333090</li>
-            <li>Brand: Nike</li>
-            <li>Country of origin: Thailand</li>
-            <li>Machine wash</li>
-            <li>Slim fit</li>
-            <li>Identical to the shirts worn by Paris Saint-Germain players during matches</li>
-            <li>Interior neck detail</li>
-            <li>Silicone badge</li>
-            <li>V-neck</li>
-            <li>Nike Dri-FIT ADV technology combines sweat-wicking fabric with advanced innovations</li>
-            <li>The SNIPES back of jersey sponsor is included with the Players or Custom Ligue 1 print flocking option</li>
-            <li>Material: 100% Polyester Knitted</li>
-            <li>Short sleeve</li>
-            <li>Officially licensed</li>
-            <li>Customised items are final sale and cannot be cancelled, changed, returned or refunded after order has been placed</li>
+            <li>Référence produit : 202333090</li>
+            <li>Marque : Nike</li>
+            <li>Pays d'origine : Thaïlande</li>
+            <li>Lavage en machine</li>
+            <li>Coupe ajustée (Slim fit)</li>
+            <li>Identique aux maillots portés par les joueurs du Paris Saint-Germain lors des matchs</li>
+            <li>Détail intérieur au col</li>
+            <li>Écusson en silicone</li>
+            <li>Col en V</li>
+            <li>La technologie Nike Dri-FIT ADV combine un tissu évacuant la transpiration avec des innovations avancées</li>
+            <li>Le sponsor SNIPES au dos du maillot est inclus avec l'option de flocage Joueurs ou Personnalisé Ligue 1</li>
+            <li>Matière : 100% Polyester Tricoté</li>
+            <li>Manches courtes</li>
+            <li>Sous licence officielle</li>
+            <li>Les articles personnalisés sont en vente ferme et ne peuvent être annulés, modifiés, retournés ou remboursés après la commande</li>
           </ul>
         </AccordionItem>
 
         <AccordionItem title="Livraison">
           <ul className="list-disc list-outside ml-4 space-y-1 marker:text-gray-500">
             <li>
-              This item usually ships within 2 business day. Items with name and number personalisation ship within 5 business days. Please proceed to checkout for shipping options and additional transit times.
+              Cet article est généralement expédié sous 2 jours ouvrables. Les articles avec personnalisation (nom et numéro) sont expédiés sous 5 jours ouvrables. Veuillez procéder au paiement pour voir les options de livraison et les délais de transit supplémentaires.
             </li>
           </ul>
         </AccordionItem>

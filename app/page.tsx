@@ -18,24 +18,24 @@ export default function Home() {
       />
       <Header />
       
-      <main className="flex-grow pt-4 pb-16 lg:pt-8">
+      <main className="flex-grow pt-4 pb-12 lg:pt-8">
         <div className="max-w-[1400px] mx-auto sm:px-6 lg:px-8">
           
           {/* Breadcrumbs */}
           <nav className="flex text-xs px-4 text-gray-500 mb-4 overflow-x-auto whitespace-nowrap scrollbar-hide">
             <span className="hover:text-[#1b1b1b] cursor-pointer transition-colors">Paris Saint-Germain</span>
             <span className="mx-1">/</span>
-            <span className="text-[#1b1b1b] cursor-pointer">Paris Saint-Germain Jerseys</span>
+            <span className="text-[#1b1b1b] cursor-pointer">Maillots Paris Saint-Germain</span>
           </nav>
 
           {/* Header Info */}
       <div className="mb-6 p-4">
         <h1 className="text-2xl lg:text-3xl font-bold text-[#1b1b1b] mb-1 leading-tight tracking-tight">
-          PSG Nike Dri-FIT ADV Home Match Shirt 2025-26
+          Maillot Domicile Match PSG Nike Dri-FIT ADV 2025-26
         </h1>
         
         <div className="flex items-center gap-1 mb-4">
-          <span className="text-xs text-gray-900">by</span>
+          <span className="text-xs text-gray-900">par</span>
           <div className="relative w-8 h-4">
              {/* Nike Logo */}
              <Image src="/images/contentProduct/nike.png" alt="Nike" fill className="object-contain object-left" />
@@ -43,7 +43,7 @@ export default function Home() {
         </div>
 
         <p className="text-base text-[#1b1b1b] font-bold">
-          Your Price: <span className="font-bold">€149.99</span>
+          Prix : <span className="font-bold">€149.99</span>
         </p>
       </div>
 

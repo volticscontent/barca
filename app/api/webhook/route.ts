@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { headers } from 'next/headers';
 import Stripe from 'stripe';
 import pool from '../../lib/db';
+import { sendToUtmify, UtmifyPayload } from '../../lib/utmify';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_build_key', {
   typescript: true,
@@ -40,27 +41,23 @@ export async function POST(request: Request) {
     // Handle the event
     switch (event.type) {
       case 'checkout.session.completed':
-        // eslint-disable-next-line no-case-declarations
         const session = event.data.object as Stripe.Checkout.Session;
         console.log(`✅ Checkout Session completed: ${session.id}`);
         await saveOrderFromSession(session);
         break;
 
       case 'checkout.session.async_payment_succeeded':
-        // eslint-disable-next-line no-case-declarations
         const asyncSession = event.data.object as Stripe.Checkout.Session;
         console.log(`✅ Async Payment succeeded: ${asyncSession.id}`);
         await saveOrderFromSession(asyncSession);
         break;
 
       case 'payment_intent.succeeded':
-        // eslint-disable-next-line no-case-declarations
         const paymentIntent = event.data.object as Stripe.PaymentIntent;
         console.log(`💰 PaymentIntent status: ${paymentIntent.status}`);
         break;
 
       case 'payment_intent.payment_failed':
-        // eslint-disable-next-line no-case-declarations
         const paymentIntentFailed = event.data.object as Stripe.PaymentIntent;
         console.log(`❌ Payment failed: ${paymentIntentFailed.last_payment_error?.message}`);
         break;
@@ -93,12 +90,12 @@ async function saveOrderFromSession(session: Stripe.Checkout.Session) {
         // Prepare products for DB and UTMify
         const products = lineItems.map(item => ({
             id: item.price?.product as string || 'unknown',
-            name: item.description,
+            name: item.description || 'Product',
             planId: item.price?.product as string || 'unknown',
-            planName: item.description,
+            planName: item.description || 'Product',
             quantity: item.quantity || 1,
             priceInCents: item.amount_total,
-            size: 'N/A' // We might not have size here easily unless in line_item metadata, but we can try to extract from description if Stripe adds it
+            size: item.description?.match(/Taille: (.*?)(?: -|$)/)?.[1] || 'N/A'
         }));
 
         const productsJson = JSON.stringify(products);
@@ -164,57 +161,49 @@ async function saveOrderFromSession(session: Stripe.Checkout.Session) {
         }
 
         // Send to UTMify
-        const utmifyToken = process.env.UTMIFY_API_TOKEN;
-        if (utmifyToken) {
-             const payload = {
-                orderId: paymentIntentId || session.id,
-                platform: 'Stripe', 
-                paymentMethod: 'credit_card', 
-                status: 'paid',
-                createdAt: new Date(expandedSession.created * 1000).toISOString().replace('T', ' ').substring(0, 19),
-                approvedDate: new Date().toISOString().replace('T', ' ').substring(0, 19),
-                customer: {
-                    name: customerDetails?.name || 'Customer',
-                    email: customerDetails?.email || 'customer@example.com',
-                    phone: customerDetails?.phone || '', 
-                    document: null,
-                    firstName: customerDetails?.name?.split(' ')[0] || 'Customer', 
-                    lastName: customerDetails?.name?.split(' ').slice(1).join(' ') || '',
-                },
-                products: products,
-                trackingParameters: {
-                    src: metadata.src || null,
-                    sck: metadata.sck || null,
-                    utm_source: metadata.utm_source || null,
-                    utm_medium: metadata.utm_medium || null,
-                    utm_campaign: metadata.utm_campaign || null,
-                    utm_term: metadata.utm_term || null,
-                    utm_content: metadata.utm_content || null,
-                },
-                commission: {
-                    totalPriceInCents: expandedSession.amount_total || 0,
-                    gatewayFeeInCents: 0,
-                    userCommissionInCents: 0,
-                    currency: expandedSession.currency ? expandedSession.currency.toUpperCase() : 'EUR'
+        const payload: UtmifyPayload = {
+            orderId: paymentIntentId || session.id,
+            platform: 'Stripe', 
+            paymentMethod: 'credit_card', 
+            status: 'paid',
+            createdAt: new Date(expandedSession.created * 1000).toISOString().replace('T', ' ').substring(0, 19),
+            approvedDate: new Date().toISOString().replace('T', ' ').substring(0, 19),
+            customer: {
+                name: customerDetails?.name || 'Customer',
+                email: customerDetails?.email || 'customer@example.com',
+                phone: customerDetails?.phone || '', 
+                document: null,
+                firstName: customerDetails?.name?.split(' ')[0] || 'Customer', 
+                lastName: customerDetails?.name?.split(' ').slice(1).join(' ') || '',
+                address: {
+                    street: customerDetails?.address?.line1 || '',
+                    number: '',
+                    neighborhood: '',
+                    city: customerDetails?.address?.city || '',
+                    state: customerDetails?.address?.state || '',
+                    country: customerDetails?.address?.country || '',
+                    zipCode: customerDetails?.address?.postal_code || ''
                 }
-            };
-
-            const response = await fetch('https://api.utmify.com.br/api-credentials/orders', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'x-api-token': utmifyToken
-                },
-                body: JSON.stringify(payload)
-            });
-
-            if (!response.ok) {
-                const errorText = await response.text();
-                console.error(`Erro na API UTMify: ${response.status} - ${errorText}`);
-            } else {
-                console.log("Pedido enviado com sucesso para UTMify via Webhook");
+            },
+            products: products,
+            trackingParameters: {
+                src: metadata.src || null,
+                sck: metadata.sck || null,
+                utm_source: metadata.utm_source || null,
+                utm_medium: metadata.utm_medium || null,
+                utm_campaign: metadata.utm_campaign || null,
+                utm_term: metadata.utm_term || null,
+                utm_content: metadata.utm_content || null,
+            },
+            commission: {
+                totalPriceInCents: expandedSession.amount_total || 0,
+                gatewayFeeInCents: 0,
+                userCommissionInCents: 0,
+                currency: expandedSession.currency ? expandedSession.currency.toUpperCase() : 'EUR'
             }
-        }
+        };
+
+        await sendToUtmify(payload);
 
     } catch (err) {
         console.error('Error in saveOrderFromSession:', err);

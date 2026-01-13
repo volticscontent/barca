@@ -3,7 +3,6 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from './context/CartContext';
 import CartDrawer from './components/CartDrawer';
-import Script from "next/script";
 import FacebookPixel from "./components/FacebookPixel";
 import { Suspense } from "react";
 

@@ -230,7 +230,7 @@ export default function ProductInfo({ selectedBadge, onBadgeChange }: { selected
       <div className="mt-8 mb-8">
         <div className="relative rounded-lg overflow-hidden mb-6">
            <Image 
-            src={MAIN_PRODUCT.images[1] || MAIN_PRODUCT.image} 
+            src={badgeData?.productImage || MAIN_PRODUCT.images[1] || MAIN_PRODUCT.image} 
             alt="Back of shirt" 
             width={1200}
             height={1200}
@@ -304,7 +304,7 @@ export default function ProductInfo({ selectedBadge, onBadgeChange }: { selected
       <CompleteTheLook />
 
       {/* Accordions */}
-      <div className="">
+      <div className="border-b-2 border-gray-200">
         {MAIN_PRODUCT.details?.map((detail, index) => (
           <AccordionItem key={index} title={detail.title} defaultOpen={index === 0}>
             {detail.content}

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
+import { sendToUtmify, UtmifyPayload } from '../../lib/utmify';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_build_key', {
   typescript: true,
@@ -22,26 +23,20 @@ export async function GET(request: Request) {
     const metadata = session.metadata || {};
 
     // Prepare Utmify Payload
-    const utmifyToken = process.env.UTMIFY_API_TOKEN;
-    
-    if (!utmifyToken) {
-        console.warn("Utmify Token not found in environment variables.");
-    }
-
-    if (utmifyToken && session.status === 'complete') {
+    if (session.status === 'complete') {
         try {
             const lineItems = session.line_items?.data || [];
             const products = lineItems.map(item => ({
                 id: item.price?.product as string || 'unknown',
-                name: item.description,
+                name: item.description || 'Product',
                 planId: item.price?.product as string || 'unknown',
-                planName: item.description,
+                planName: item.description || 'Product',
                 quantity: item.quantity || 1,
                 priceInCents: item.amount_total,
-                size: 'N/A'
+                size: item.description?.match(/Taille: (.*?)(?: -|$)/)?.[1] || 'N/A'
             }));
 
-            const payload = {
+            const payload: UtmifyPayload = {
                 orderId: typeof session.payment_intent === 'string' ? session.payment_intent : (session.payment_intent as Stripe.PaymentIntent)?.id || session.id,
                 platform: 'Stripe', 
                 paymentMethod: 'credit_card', 
@@ -83,24 +78,7 @@ export async function GET(request: Request) {
                 }
             };
 
-            console.log("Sending event to Utmify...", payload.orderId);
-
-            // Await the fetch to ensure it completes before the lambda terminates
-            const utmifyRes = await fetch('https://api.utmify.com.br/api-credentials/orders', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'x-api-token': utmifyToken
-                },
-                body: JSON.stringify(payload)
-            });
-
-            if (!utmifyRes.ok) {
-                const errorText = await utmifyRes.text();
-                console.error(`Utmify API Error (${utmifyRes.status}): ${errorText}`);
-            } else {
-                console.log('Utmify Event Sent Successfully');
-            }
+            await sendToUtmify(payload);
 
         } catch (err) {
             console.error('Error sending Utmify payload:', err);

@@ -70,7 +70,7 @@ export default function CheckoutPage() {
         })
         .catch((err) => {
            console.error("Error creating checkout session:", err);
-           setError("Une erreur est survenue lors de l'initialisation du paiement. Veuillez réessayer.");
+           setError("Ocurrió un error al iniciar el pago. Por favor, inténtelo de nuevo.");
         })
         .finally(() => {
           fetchingRef.current = false;
@@ -85,10 +85,10 @@ export default function CheckoutPage() {
   if (cartItems.length === 0) {
      return (
         <div className="flex flex-col items-center justify-center min-h-screen p-4 bg-gray-50">
-            <h1 className="text-2xl font-bold mb-4 text-[#1b1b1b]">Votre panier est vide</h1>
+            <h1 className="text-2xl font-bold mb-4 text-[#1b1b1b]">Tu carrito está vacío</h1>
             <Link href="/" className="text-primary hover:underline font-bold flex items-center gap-2">
               <ArrowLeft className="w-4 h-4" />
-              Retourner à la boutique
+              Volver a la tienda
             </Link>
         </div>
      );
@@ -101,10 +101,10 @@ export default function CheckoutPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
             <Link href="/" className="flex items-center gap-2 text-gray-600 hover:text-primary transition-colors">
                 <ArrowLeft className="w-5 h-5" />
-                <span className="font-medium">Retour</span>
+                <span className="font-medium">Volver</span>
             </Link>
             <div className="flex items-center gap-2 text-[#1b1b1b]">
-                <span className="font-light text-sm uppercase tracking-wide">Paiement Sécurisé</span>
+                <span className="font-light text-sm uppercase tracking-wide">Pago Seguro</span>
                 <Lock className="w-4 h-4" />
             </div>
         </div>
@@ -116,7 +116,7 @@ export default function CheckoutPage() {
             {/* Left Column: Order Summary */}
             <div className="lg:col-span-5 lg:order-2 lg:mb-0">
                 <div className="bg-gray-100 rounded-lg border border-gray-100 px-6 pt-6 sticky top-8">
-                    <h2 className="text-lg font-medium text-[#1b1b1b] mb-4 border-b border-gray-100 pb-4">Récapitulatif de la commande</h2>
+                    <h2 className="text-lg font-medium text-[#1b1b1b] mb-4 border-b border-gray-100 pb-4">Resumen del pedido</h2>
                     
                     <div className="space-y-4 mb-6 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
                         {cartItems.map((item) => (
@@ -131,7 +131,7 @@ export default function CheckoutPage() {
                                 </div>
                                 <div className="flex-1">
                                     <h3 className="text-xl font-semibold font-sans-serif text-[#1b1b1b] line-clamp-3">{item.name}</h3>
-                                    <p className="text-xs text-gray-500 mt-1">Taille: <span className="font-medium">{item.size}</span> | Qty: {item.quantity}</p>
+                                    <p className="text-xs text-gray-500 mt-1">Talla: <span className="font-medium">{item.size}</span> | Cant: {item.quantity}</p>
                                     <div className="flex items-center gap-2 mt-1">
                                         <p className="text-sm font-bold text-[#1b1b1b]">€{(item.price * item.quantity).toFixed(2)}</p>
                                         {item.originalPrice && item.originalPrice > item.price && (
@@ -153,16 +153,16 @@ export default function CheckoutPage() {
 
                     <div className="border-t border-gray-400 pt-4 space-y-2">
                         <div className="flex justify-between text-sm text-black">
-                            <span>Sous-total</span>
+                            <span>Subtotal</span>
                             <span>€{totalAmount.toFixed(2)}</span>
                         </div>
                         <div className="flex justify-between text-sm text-gray-600">
-                            <span>Livraison</span>
-                            <span className="text-green-600 font-medium">Gratuite</span>
+                            <span>Envío</span>
+                            <span className="text-green-600 font-medium">Gratis</span>
                         </div>
                         {totalSavings > 0 && (
                             <div className="flex justify-between text-x1 line-through text-gray-500 font-medium">
-                                <span>Économisé</span>
+                                <span>Ahorrado</span>
                                 <span>-€{totalSavings.toFixed(2)}</span>
                             </div>
                         )}
@@ -178,13 +178,13 @@ export default function CheckoutPage() {
                         <div className="w-12 h-12 bg-red-50 rounded-full flex items-center justify-center mb-4">
                             <ArrowLeft className="h-6 w-6 text-red-500" />
                         </div>
-                        <h3 className="text-lg font-medium text-red-900 mb-2">Erreur de chargement</h3>
+                        <h3 className="text-lg font-medium text-red-900 mb-2">Error de carga</h3>
                         <p className="text-gray-500 mb-6">{error}</p>
                         <button 
                             onClick={() => window.location.reload()}
                             className="px-6 py-2 bg-primary text-white rounded-sm font-medium hover:bg-primary/90 transition-colors"
                         >
-                            Réessayer
+                            Reintentar
                         </button>
                     </div>
                 ) : clientSecret && stripePromise ? (
@@ -194,7 +194,7 @@ export default function CheckoutPage() {
                 ) : (
                     <div className="flex flex-col items-center justify-center p-12 bg-white rounded-lg shadow-sm border border-gray-100 min-h-[300px]">
                         <Loader2 className="h-10 w-10 text-primary animate-spin mb-4" />
-                        <p className="text-gray-500 font-medium">Initialisation du module de paiement...</p>
+                        <p className="text-gray-500 font-medium">Iniciando el módulo de pago...</p>
                     </div>
                 )}
             </div>

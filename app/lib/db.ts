@@ -1,9 +1,6 @@
 import { Pool } from 'pg';
 
-let pool: Pool;
-
-if (!global.pool) {
-  const config = process.env.POSTGRES_URL 
+const pool = global.pool || new Pool(process.env.POSTGRES_URL 
     ? { connectionString: process.env.POSTGRES_URL }
     : {
         user: process.env.POSTGRES_USER,
@@ -11,12 +8,11 @@ if (!global.pool) {
         database: process.env.POSTGRES_DB,
         password: process.env.POSTGRES_PASSWORD,
         port: parseInt(process.env.POSTGRES_PORT || '5432'),
-      };
+      });
 
-  global.pool = new Pool(config);
+if (process.env.NODE_ENV !== 'production') {
+  global.pool = pool;
 }
-
-pool = global.pool;
 
 export default pool;
 

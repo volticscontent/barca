@@ -58,7 +58,7 @@ export default function CartDrawer() {
                 {/* Image */}
                 <div className="relative w-20 h-24 bg-gray-100 rounded-sm overflow-hidden flex-shrink-0">
                   <Image
-                    src={item.image}
+                    src={item.image || '/images/contentProduct/main.webp'}
                     alt={item.name}
                     fill
                     className="object-cover object-center"
@@ -158,7 +158,7 @@ export default function CartDrawer() {
                 toggleCart();
                 navigateWithUTM('/checkout');
               }}
-              className="w-full bg-primary text-white h-12 rounded-sm font-bold hover:bg-[#003055] transition-colors shadow-sm uppercase tracking-wide"
+              className="w-full bg-gradient-to-r from-[#007bff] via-[#0056b3] to-[#b30027] text-white h-12 rounded-sm font-bold hover:bg-[#003055] transition-colors shadow-sm uppercase tracking-wide"
             >
               Commander
             </button>

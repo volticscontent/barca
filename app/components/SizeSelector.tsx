@@ -14,26 +14,26 @@ export default function SizeSelector({ selectedSize, onSelectSize }: { selectedS
       <SizeChartModal isOpen={isSizeChartOpen} onClose={() => setIsSizeChartOpen(false)} />
       
       <div className="flex justify-between items-center mb-3">
-        <span className="text-sm font-bold text-[#1b1b1b]">Size</span>
+        <span className="text-sm font-bold text-[#1b1b1b] uppercase">SIZE</span>
         <button 
           onClick={() => setIsSizeChartOpen(true)}
-          className="flex items-center gap-1 text-xs font-bold text-gray-500 hover:text-primary underline underline-offset-2 transition-colors"
+          className="flex items-center gap-1 text-xs font-bold text-gray-500 hover:text-black transition-colors"
         >
           <Ruler className="w-3 h-3" />
-          Size Chart
+          Size guide
         </button>
       </div>
       
-      <div className="grid grid-cols-4 gap-3">
+      <div className="flex flex-wrap gap-1">
         {SIZES.map((size) => (
           <button
             key={size}
             onClick={() => onSelectSize(size)}
             className={`
-              h-12 flex items-center justify-center rounded-sm border text-sm font-bold transition-all duration-200
+              h-8 w-[56px] flex items-center justify-center rounded-full text-xs font-medium transition-all duration-200
               ${selectedSize === size 
-                ? 'border-primary bg-primary text-white shadow-md transform scale-[1.02]' 
-                : 'border-gray-400 bg-gray-100 text-[#1b1b1b] hover:border-primary hover:bg-gray-50 hover:shadow-sm'}
+                ? 'bg-[#165fce] text-white shadow-md' 
+                : 'bg-blue-100 border border-gray-200 text-[#181733] hover:border-[#154284]'}
             `}
           >
             {size}

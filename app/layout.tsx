@@ -28,7 +28,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <Script id="utmify-pixel" strategy="afterInteractive">
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@200..800&display=swap" rel="stylesheet" />
+        {/* <Script id="utmify-pixel" strategy="afterInteractive">
           {`
             window.pixelId = "${process.env.NEXT_PUBLIC_UTMIFY_PIXEL_ID}";
             var a = document.createElement("script");
@@ -44,7 +47,7 @@ export default function RootLayout({
           src="https://cdn.utmify.com.br/scripts/utms/latest.js"
           data-utmify-prevent-xcod-sck=""
           data-utmify-prevent-subids=""
-        />
+        /> */}
       </head>
       <body className={`${inter.className} antialiased overflow-x-hidden`}>
         <Suspense fallback={null}>

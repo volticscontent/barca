@@ -4,8 +4,35 @@ import Link from "next/link";
 import { CheckCircle } from "lucide-react";
 import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { loadStripe } from "@stripe/stripe-js";
 import * as fpixel from "../../lib/fpixel";
+
+interface StripeLineItem {
+  id: string;
+  description: string;
+  quantity: number;
+  price?: {
+    product: string;
+  };
+}
+
+interface StripeSessionResponse {
+  status: string;
+  amount_total: number;
+  currency: string;
+  line_items?: StripeLineItem[];
+  customer_details?: {
+    email?: string;
+    phone?: string;
+    name?: string;
+    address?: {
+      city?: string;
+      state?: string;
+      country?: string;
+      postal_code?: string;
+    };
+  };
+  customer_email?: string;
+}
 
 function SuccessContent() {
   const searchParams = useSearchParams();
@@ -18,107 +45,60 @@ function SuccessContent() {
 
     const trackPurchase = async () => {
       // Use useSearchParams hook
-      const paymentIntentClientSecret = searchParams.get("payment_intent_client_secret");
       const sessionId = searchParams.get("session_id");
 
       if (sessionId) {
           // Handle Checkout Session (Embedded/Hosted)
           fetch(`/api/retrieve-checkout-session?session_id=${sessionId}`)
               .then(res => res.json())
-              .then(data => {
+              .then((data: StripeSessionResponse) => {
                   if (data.status === 'complete' || data.status === 'open') { // Open might be async payment pending
                        setAmount(data.amount_total / 100);
-                       // We might not get items details easily here without expanding line_items on server
-                       // But we can just show success.
+                       
+                       // Populate order items if available
+                       if (data.line_items && Array.isArray(data.line_items)) {
+                           const items = data.line_items.map((item) => ({
+                               id: item.price?.product || item.id,
+                               name: item.description,
+                               qty: item.quantity,
+                               size: item.description?.match(/Taille: (.*?)(?: -|$)/)?.[1] || '' // Attempt to extract size from description if present
+                           }));
+                           setOrderItems(items);
+                       }
                        
                        // Pixel Tracking
                        const eventID = sessionStorage.getItem('purchase_event_id') || '';
-                       const email = data.customer_email || sessionStorage.getItem('user_email') || '';
+                       const details = data.customer_details || {};
+                       const email = details.email || sessionStorage.getItem('user_email') || '';
+                       const name = details.name || '';
+                       const firstName = name.split(' ')[0] || '';
+                       const lastName = name.split(' ').slice(1).join(' ') || '';
                        
                        const userData = fpixel.normalizeData({
-                            email: email
+                            email: email,
+                            phone: details.phone,
+                            firstName: firstName,
+                            lastName: lastName,
+                            city: details.address?.city,
+                            state: details.address?.state,
+                            country: details.address?.country,
+                            zip: details.address?.postal_code
                        });
 
                        fpixel.event("Purchase", {
                             value: data.amount_total / 100,
-                            currency: data.currency.toUpperCase(),
+                            currency: (data.currency || 'eur').toUpperCase(),
                             content_type: "product",
+                            contents: data.line_items?.map((item) => ({
+                                id: item.price?.product,
+                                quantity: item.quantity
+                            }))
                        }, eventID, userData);
                        
                        setTracked(true);
                   }
               })
               .catch(err => console.error("Error retrieving session", err));
-          
-      } else if (paymentIntentClientSecret) {
-         // Legacy Payment Element Flow
-         // 1. Call Backend API immediately (Critical for UTMify/DB)
-         // We don't wait for Stripe client-side retrieval to ensure this fires ASAP.
-         // 'keepalive: true' ensures request completes even if user closes tab.
-         fetch('/api/process-payment-success', {
-             method: 'POST',
-             headers: { 'Content-Type': 'application/json' },
-             body: JSON.stringify({ payment_intent_client_secret: paymentIntentClientSecret }),
-             keepalive: true
-         }).then(res => res.json())
-           .then(data => console.log('UTMify Processed:', data))
-           .catch(err => console.error('UTMify Error:', err));
-
-        // 2. Load Stripe for UI and Client-side Pixel
-        const stripe = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
-        if (!stripe) return;
-
-        let retrievedAmount = 0;
-        let currency = 'EUR';
-        let items = [];
-
-        const { paymentIntent } = await stripe.retrievePaymentIntent(paymentIntentClientSecret);
-        if (paymentIntent && paymentIntent.status === 'succeeded') {
-             retrievedAmount = paymentIntent.amount / 100; // Stripe amount is in cents
-             currency = paymentIntent.currency.toUpperCase();
-
-             if ((paymentIntent as any).metadata && (paymentIntent as any).metadata.cart_items) {
-                try {
-                    items = JSON.parse((paymentIntent as any).metadata.cart_items);
-                    setOrderItems(items);
-                    setAmount(retrievedAmount);
-                } catch (e) {
-                    console.error("Error parsing cart items metadata", e);
-                }
-             }
-        }
-        
-        // ... (rest of pixel logic)
-        
-        // Fallback or additional check if needed. 
-        // Note: retrievePaymentIntent needs the client secret (usually). 
-        // If only payment_intent ID is present (some flows), we might not be able to fetch details client-side securely without a backend call.
-        // But Stripe return_url usually includes client_secret.
-        
-        if (retrievedAmount > 0) {
-            // Retrieve User Data & Event ID for Deduplication/Matching
-            const eventID = sessionStorage.getItem('purchase_event_id') || '';
-            const email = sessionStorage.getItem('user_email') || '';
-            const phone = sessionStorage.getItem('user_phone') || '';
-            
-            const userData = fpixel.normalizeData({
-                email,
-                phone
-            });
-
-            fpixel.event("Purchase", {
-              value: retrievedAmount,
-              currency: currency,
-              content_type: "product",
-            }, eventID, userData);
-            
-            // Clear session storage after tracking to prevent double fire on reload (though 'tracked' state handles this component-wise)
-            // sessionStorage.removeItem('purchase_event_id'); 
-            // Keeping it might be useful if user refreshes immediately, but typically we want unique events. 
-            // Better to rely on the 'tracked' state.
-            
-            setTracked(true);
-        }
       }
     };
 

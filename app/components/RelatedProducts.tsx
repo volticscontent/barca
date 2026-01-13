@@ -1,37 +1,5 @@
 import Image from 'next/image';
-
-const RELATED_PRODUCTS = [
-  {
-    id: 1,
-    name: 'PSG Nike Home Stadium Shirt 2025-26',
-    price: '€99.99',
-    image: '/images/otherProducts/psg-nike-home-stadium-shirt-2025-26.jpg'
-  },
-  {
-    id: 2,
-    name: 'PSG Jordan Fourth Dri-FIT ADV Match Shirt 2025-26',
-    price: '€149.99',
-    image: '/images/otherProducts/psg-jordan-fourth-dri-fit-adv-match-shirt-2025-26.jpg'
-  },
-  {
-    id: 3,
-    name: 'PSG Nike Dri-FIT ADV Home Match Shirt 2025-26 with Cup Printing',
-    price: '€171.99',
-    image: '/images/otherProducts/psg-nike-dri-fit-adv-home-match-shirt-2025-26-with.jpg'
-  },
-  {
-    id: 4,
-    name: 'PSG Nike Third Stadium Shirt 2025-26',
-    price: '€99.99',
-    image: '/images/otherProducts/psg-nike-third-stadium-shirt-2025-26.jpg'
-  },
-  {
-    id: 5,
-    name: 'PSG Nike Away Stadium Shirt 2025-26',
-    price: '€99.99',
-    image: '/images/otherProducts/psg-nike-away-stadium-shirt-2025-26.jpg'
-  }
-];
+import { YOU_MAY_ALSO_LIKE } from '@/app/data/products';
 
 export default function RelatedProducts() {
   return (
@@ -40,7 +8,7 @@ export default function RelatedProducts() {
       
       {/* Mobile Carousel / Desktop Grid */}
       <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 px-4 lg:mx-0 lg:grid lg:grid-cols-5 lg:gap-6 lg:pb-0 lg:overflow-visible scrollbar-hide">
-        {RELATED_PRODUCTS.map((product) => (
+        {YOU_MAY_ALSO_LIKE.map((product) => (
           <div key={product.id} className="snap-center shrink-0 w-[45vw] lg:w-auto group cursor-pointer">
             <div className="relative aspect-[4/5] mb-3 bg-gray-100 rounded-sm overflow-hidden">
               <Image

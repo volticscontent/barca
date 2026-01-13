@@ -8,13 +8,16 @@ export default function Header() {
   const { cartCount, toggleCart } = useCart();
 
   return (
-    <header className="sticky top-0 z-50 bg-white border-b border-gray-100 font-sans">
-
+    <header className="fixed top-0 left-0 w-full z-50 bg-[#181733] font-sans shadow-md">
+      {/* Promo Bar (White/Gray) */}
+      <div className="text-[#ebebeb] font-bold bg-[linear-gradient(175deg,#c00030_7%,#0044cc_88%)] text-center text-[16px] py-2 flex items-center justify-center gap-2">
+        <span>Promotion des champions 2026</span>
+      </div>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Mobile Menu & Logo Area */}
           <div className="flex items-center gap-4">
-            <button className="p-2 -ml-2 hover:bg-gray-100 rounded-full lg:hidden">
+            <button className="p-2 -ml-2 hover:bg-gray-100 rounded-full lg:hidden invert">
               <Image src="/images/header/aspire-icon-aspire-hamburger-icon.svg" alt="Menu" width={24} height={24} />
             </button>
             <Link href="/" className="flex-shrink-0 flex items-center gap-2">
@@ -33,7 +36,7 @@ export default function Header() {
           </nav>
 
           {/* Icons Area */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 invert">
             <button className="p-2 hover:bg-gray-100 rounded-full">
               <Image src="/images/header/aspire-icon-aspire-search-icon.svg" alt="Recherche" width={24} height={24} />
             </button>
@@ -53,14 +56,6 @@ export default function Header() {
             </button>
           </div>
         </div>
-      </div>
-      {/* Promo Bar (White/Gray) */}
-      <div className="border-y border-[#b4b4b4] text-[#1b1b1b] text-center text-[14px] py-2 flex items-center justify-center gap-2">
-        <Image src="/images/header/svgpromo.png" alt="Promo" width={24} height={24} />
-        <span>Jusqu&apos;à 66,67 % de réduction sur une sélection d&apos;articles</span>
-      </div>
-      <div className="text-[#ebebeb] bg-[#163d61] text-center text-[16px] py-2 flex items-center justify-center gap-2">
-        <span>PROMOTION DES CHAMPIONS 2026</span>
       </div>
     </header>
   );

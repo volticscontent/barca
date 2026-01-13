@@ -14,8 +14,7 @@ export async function POST(request: Request) {
     const { cartItems, utmParams } = await request.json();
     const origin = request.headers.get('origin') || 'http://localhost:3000';
 
-    // Map cart items to Stripe line items
-    const line_items = cartItems.map((item: any) => ({
+    const line_items = cartItems.map((item: { name: string; image?: string; id: string | number; size?: string; customization?: unknown; price: number; quantity?: number }) => ({
       price_data: {
         currency: 'eur',
         product_data: {
@@ -23,7 +22,7 @@ export async function POST(request: Request) {
           images: item.image ? [item.image.startsWith('http') ? item.image : `${origin}${item.image}`] : [],
           metadata: {
             id: String(item.id),
-            size: item.size,
+            size: item.size || null,
             customization: item.customization ? JSON.stringify(item.customization).substring(0, 450) : null
           }
         },
@@ -36,7 +35,7 @@ export async function POST(request: Request) {
     const metadata = {
         ...utmParams,
         // Store simple cart summary in metadata just in case
-        cart_summary: JSON.stringify(cartItems.map((i: any) => ({id: i.id, q: i.quantity, s: i.size}))).substring(0, 450)
+        cart_summary: JSON.stringify(cartItems.map((i: { id: string | number; quantity?: number; size?: string }) => ({id: i.id, q: i.quantity, s: i.size}))).substring(0, 450)
     };
 
     const session = await stripe.checkout.sessions.create({

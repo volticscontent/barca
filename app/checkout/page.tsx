@@ -1,11 +1,11 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import { EmbeddedCheckoutProvider, EmbeddedCheckout } from "@stripe/react-stripe-js";
 import { useCart } from "../context/CartContext";
 import { Loader2, Lock, ArrowLeft } from "lucide-react";
-import Footer from "../components/Footer";
+// import Footer from "../components/Footer"; // Removed unused import
 import Link from "next/link";
 import Image from "next/image";
 import { getUTMParams } from "../lib/utmNavigation";
@@ -17,7 +17,9 @@ const stripePromise = publishableKey ? loadStripe(publishableKey) : null;
 
 export default function CheckoutPage() {
   const [clientSecret, setClientSecret] = useState("");
+  const [error, setError] = useState<string | null>(null);
   const { cartItems } = useCart();
+  const fetchingRef = useRef(false);
 
   // Calculate total amount
   const totalAmount = cartItems.reduce((acc, item) => acc + (item.price * (item.quantity || 1)), 0);
@@ -40,7 +42,8 @@ export default function CheckoutPage() {
     }
 
     // Create PaymentIntent as soon as the page loads if cart is not empty
-    if (totalAmount > 0 && !clientSecret) {
+    if (totalAmount > 0 && !clientSecret && !fetchingRef.current) {
+      fetchingRef.current = true;
       const utmParams = getUTMParams();
       
       fetch("/api/create-checkout-session", {
@@ -67,14 +70,17 @@ export default function CheckoutPage() {
         })
         .catch((err) => {
            console.error("Error creating checkout session:", err);
-           // Optional: Show error to user via UI
+           setError("Une erreur est survenue lors de l'initialisation du paiement. Veuillez réessayer.");
+        })
+        .finally(() => {
+          fetchingRef.current = false;
         });
     }
   }, [totalAmount, clientSecret, cartItems]);
 
-  const options = {
+  const options = useMemo(() => ({
     clientSecret,
-  };
+  }), [clientSecret]);
 
   if (cartItems.length === 0) {
      return (
@@ -115,9 +121,9 @@ export default function CheckoutPage() {
                     <div className="space-y-4 mb-6 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
                         {cartItems.map((item) => (
                             <div key={`${item.id}-${item.size}`} className="flex gap-4">
-                                <div className="relative w-35 h-35 bg-gray-100 rounded-sm overflow-hidden flex-shrink-0">
+                                <div className="relative w-36 h-36 bg-gray-100 rounded-sm overflow-hidden flex-shrink-0">
                                     <Image
-                                        src={item.image}
+                                        src={item.image || '/images/contentProduct/main.webp'}
                                         alt={item.name}
                                         fill
                                         className="object-cover object-center"
@@ -146,7 +152,7 @@ export default function CheckoutPage() {
                     </div>
 
                     <div className="border-t border-gray-400 pt-4 space-y-2">
-                        <div className="flex justify-between text-sm text-gray-600">
+                        <div className="flex justify-between text-sm text-black">
                             <span>Sous-total</span>
                             <span>€{totalAmount.toFixed(2)}</span>
                         </div>
@@ -167,7 +173,21 @@ export default function CheckoutPage() {
             {/* Right Column: Payment Form */}
             <div className="lg:col-span-7 lg:order-1">
 
-                {clientSecret && stripePromise ? (
+                {error ? (
+                    <div className="flex flex-col items-center justify-center p-12 bg-white rounded-lg shadow-sm border border-red-100 min-h-[300px] text-center">
+                        <div className="w-12 h-12 bg-red-50 rounded-full flex items-center justify-center mb-4">
+                            <ArrowLeft className="h-6 w-6 text-red-500" />
+                        </div>
+                        <h3 className="text-lg font-medium text-red-900 mb-2">Erreur de chargement</h3>
+                        <p className="text-gray-500 mb-6">{error}</p>
+                        <button 
+                            onClick={() => window.location.reload()}
+                            className="px-6 py-2 bg-primary text-white rounded-sm font-medium hover:bg-primary/90 transition-colors"
+                        >
+                            Réessayer
+                        </button>
+                    </div>
+                ) : clientSecret && stripePromise ? (
                     <EmbeddedCheckoutProvider stripe={stripePromise} options={options}>
                         <EmbeddedCheckout />
                     </EmbeddedCheckoutProvider>

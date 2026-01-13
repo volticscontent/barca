@@ -121,7 +121,7 @@ function SuccessContent() {
                 <h3 className="font-bold text-gray-700 mb-2 border-b border-gray-200 pb-2">Détails de la commande</h3>
                 <ul className="space-y-2">
                     {orderItems.map((item, idx) => (
-                        <li key={idx} className="text-sm flex justify-between">
+                        <li key={idx} className="text-sm text-black flex justify-between">
                             <span>{item.qty}x {item.name} ({item.size})</span>
                         </li>
                     ))}

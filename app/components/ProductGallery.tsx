@@ -5,19 +5,9 @@ import Image from 'next/image';
 import { ZoomIn, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { MAIN_PRODUCT } from '@/app/data/products';
 
-export default function ProductGallery({ selectedBadge }: { selectedBadge?: string | null }) {
-  // Helper to determine image based on badge
-  const getImageForBadge = (badgeId?: string | null) => {
-    if (badgeId) {
-      const badge = MAIN_PRODUCT.badges?.find(b => b.id === badgeId);
-      if (badge && badge.image) return badge.image;
-    }
-    return MAIN_PRODUCT.images[0];
-  };
-
-  const [mainImage, setMainImage] = useState(() => getImageForBadge(selectedBadge));
+export default function ProductGallery() {
+  const [mainImage, setMainImage] = useState(MAIN_PRODUCT.images[0]);
   const [isZoomOpen, setIsZoomOpen] = useState(false);
-  const [prevBadge, setPrevBadge] = useState(selectedBadge);
 
   // Touch state for swipe handling
   const [touchStart, setTouchStart] = useState<number | null>(null);
@@ -46,12 +36,6 @@ export default function ProductGallery({ selectedBadge }: { selectedBadge?: stri
       prevImage();
     }
   };
-
-  // Sync state with prop change during render (avoiding useEffect cascading render)
-  if (selectedBadge !== prevBadge) {
-    setPrevBadge(selectedBadge);
-    setMainImage(getImageForBadge(selectedBadge));
-  }
 
   const nextImage = () => {
     const currentIndex = MAIN_PRODUCT.images.indexOf(mainImage);

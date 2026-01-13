@@ -21,12 +21,12 @@ export default function Home() {
       />
       <Header />
       
-      <main className="flex-1 pb-12 pt-[104px] lg:pt-[120px]">
+      <main className="flex-1 pb-12 pt-[99px] lg:pt-[120px]">
         <div className="max-w-[1400px] sm:px-4 lg:px-8">
           <div className="lg:grid lg:grid-cols-12 lg:gap-16">
             {/* Left Column: Gallery (7 cols) */}
             <div className="lg:col-span-7 mb-2 lg:mb-0">
-              <ProductGallery selectedBadge={selectedBadge} />
+              <ProductGallery />
             </div>
 
             {/* Right Column: Info (5 cols) */}

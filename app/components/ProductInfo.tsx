@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import SizeSelector from './SizeSelector';
 import KitCustomization from './KitCustomization';
@@ -139,6 +139,7 @@ export default function ProductInfo({ selectedBadge, onBadgeChange }: { selected
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const { addToCart } = useCart();
   const [error, setError] = useState('');
+  const sizeSelectorRef = useRef<HTMLDivElement>(null);
   const [customizationData, setCustomizationData] = useState<{ type: 'player' | 'custom' | null, name: string, number: string }>({ type: null, name: '', number: '' });
 
   const BASE_PRICE = MAIN_PRODUCT.price;
@@ -160,6 +161,7 @@ export default function ProductInfo({ selectedBadge, onBadgeChange }: { selected
   const handleAddToCart = () => {
     if (!selectedSize) {
       setError('Veuillez sélectionner une taille');
+      sizeSelectorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       return;
     }
     setError('');
@@ -220,7 +222,9 @@ export default function ProductInfo({ selectedBadge, onBadgeChange }: { selected
         </div>
       </div>
       {/* Size Selector */}
-      <SizeSelector selectedSize={selectedSize} onSelectSize={(size) => { setSelectedSize(size); setError(''); }} />
+      <div ref={sizeSelectorRef}>
+        <SizeSelector selectedSize={selectedSize} onSelectSize={(size) => { setSelectedSize(size); setError(''); }} />
+      </div>
       {error && <p className="text-red-600 text-sm font-bold -mt-6 mb-4 animate-pulse">{error}</p>}
 
       {/* Kit Customization */}

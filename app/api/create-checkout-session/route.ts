@@ -38,7 +38,8 @@ export async function POST(request: Request) {
         cart_summary: JSON.stringify(cartItems.map((i: { id: string | number; quantity?: number; size?: string }) => ({id: i.id, q: i.quantity, s: i.size}))).substring(0, 450)
     };
 
-    const session = await stripe.checkout.sessions.create({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const sessionConfig: any = {
       ui_mode: 'embedded',
       line_items: line_items,
       mode: 'payment',
@@ -50,14 +51,16 @@ export async function POST(request: Request) {
       phone_number_collection: {
         enabled: true,
       },
-      locale: 'fr',
+      locale: 'es',
       metadata: metadata,
       custom_text: {
         submit: {
-            message: 'Paiement sécurisé par Stripe'
+            message: 'Pago seguro con Stripe'
         }
       }
-    });
+    };
+
+    const session = await stripe.checkout.sessions.create(sessionConfig);
 
     console.log('Session created:', session.id);
     console.log('Session mode:', session.mode);

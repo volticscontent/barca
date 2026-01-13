@@ -50,11 +50,11 @@ export async function POST(request: Request) {
       phone_number_collection: {
         enabled: true,
       },
-      locale: 'fr',
+      locale: 'es',
       metadata: metadata,
       custom_text: {
         submit: {
-            message: 'Paiement sécurisé par Stripe'
+            message: 'Pago seguro con Stripe'
         }
       }
     });

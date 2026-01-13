@@ -45,7 +45,7 @@ export async function POST(request: Request) {
       return_url: `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
       // automatic_tax: { enabled: true }, // Disabled to prevent configuration errors
       shipping_address_collection: {
-        allowed_countries: ['FR', 'BE', 'CH', 'LU', 'DE', 'IT', 'ES', 'PT', 'NL', 'AT'],
+        allowed_countries: ['ES','FR', 'BE', 'CH', 'LU', 'DE', 'IT', 'PT', 'NL', 'AT'],
       },
       phone_number_collection: {
         enabled: true,

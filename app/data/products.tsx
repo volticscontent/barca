@@ -3,11 +3,20 @@ import React from 'react';
 // Interfaces
 export interface Badge {
   id: string;
+  sku: string;
+  code: string; // Internal code for Stripe privacy
   label: string;
   price: number;
   image: string;
   productImage?: string;
   svg: React.ReactNode;
+}
+
+export interface Player {
+  id: string;
+  name: string;
+  number: string;
+  code: string; // Internal code for Stripe privacy
 }
 
 export interface AccordionSection {
@@ -17,6 +26,7 @@ export interface AccordionSection {
 
 export interface Product {
   id: string;
+  sku: string;
   name: string;
   price: number;
   originalPrice?: number;
@@ -31,13 +41,16 @@ export interface Product {
   badgePrice?: number;
   badges?: Badge[];
   details?: AccordionSection[];
-  players?: string[]; // For player selection dropdown
+  players?: string[]; // Legacy: For dropdown display
+  playersList?: Player[]; // New structured list
 }
 
 // Data
 export const BADGES: Badge[] = [
   {
     id: 'laligawinners',
+    sku: 'BDG-LALIGA',
+    code: 'B01',
     label: 'LaLiga Winners',
     price: 15,
     image: '',
@@ -52,6 +65,8 @@ export const BADGES: Badge[] = [
   },
   {
     id: 'ucl',
+    sku: 'BDG-UCL',
+    code: 'B02',
     label: 'UCL',
     price: 15,
     image: '',
@@ -62,47 +77,51 @@ export const BADGES: Badge[] = [
   },
   {
     id: 'supercopa',
+    sku: 'BDG-SUPER',
+    code: 'B03',
     label: 'Supercopa',
     price: 30,
     image: '',
     productImage: '/images/badges/supercopa.png',
     svg: (
       <svg id="Capa_1" xmlns="http://www.w3.org/2000/svg" width="24" height="24" version="1.1" viewBox="0 0 24 24">
-  <path fill="currentColor" d="M6.5,6c-4.1,3.3-4.4,9.2-.9,13s9.5,3.7,13,0,3.1-9.7-1-13l.2-.5c4.6,3.4,5.3,10,1.5,14.3s-10.5,4.3-14.3,0-3.3-10.9,1.4-14.3l.2.5Z"></path>
-  <path fill="currentColor" d="M7.4,19.7c-.1,0-.4-.2-.4-.3,2.7-.4,3.8-2.7,3.7-5.3-2.2-.4-4-2-4.8-4.1,1-.5,1.6-1.5,1.5-2.6,0-1-.3-1.9-.8-2.8-.4-.8-.9-1.5-1.6-2l1.6-1.5c.7,1,1.2,2.2,1.5,3.3.7,2.3.4,4.6-1.8,5.8,1.2,1.5,3.3,2.7,5.2,2.8v1.5c0,2.1-.9,4.1-2.9,4.9s-.8.2-1.2.3Z"></path>
-  <path fill="currentColor" d="M16.6,19.7c-1.7-.2-3-1-3.6-2.5s-.5-1.6-.5-2.5v-1.6c2-.1,4-1.3,5.2-2.9-2.2-1.2-2.5-3.4-1.9-5.6.4-1.3.9-2.5,1.6-3.6l1.6,1.5c-.7.6-1.1,1.3-1.6,2-.5.9-.8,1.9-.8,2.9,0,1.1.5,2.1,1.5,2.6-.8,2.1-2.6,3.7-4.8,4.1-.1,2.5.9,4.8,3.7,5.3,0,0-.3.2-.4.3Z"></path>
-  <path fill="currentColor" d="M15.1,4.6c-2-.7-4.1-.7-6.2,0,0-.2-.1-.3-.2-.5,2.1-.8,4.4-.7,6.5,0l-.2.5Z"></path>
-  <path fill="currentColor" d="M11.4,9.9h-1.1c0,0,0,.2,0,.3h1.3s0,.4,0,.4h-1.8s0-1.7,0-1.7h1.8s0,.4,0,.4h-1.3s0,.3,0,.3h1.2c0,0,0,.2,0,.3Z"></path>
-  <path fill="currentColor" d="M11.1,8l-.3-.5h-.6s0,.5,0,.5h-.4s0-1.7,0-1.7h1.2c.3,0,.5.2.6.4s0,.6-.3.7l.4.6h-.5ZM10.9,7.1c0,0,.2-.2.2-.2s-.1-.2-.2-.2h-.7s0,.4,0,.4h.8Z"></path>
-  <path fill="currentColor" d="M14.1,9.6c0,0,.1.3,0,.3h-1.1s0,.7,0,.7h-.4s0-1.7,0-1.7h1.7s0,.4,0,.4h-1.3s0,.3,0,.3h1.1Z"></path>
-  <path fill="currentColor" d="M14.1,7v.4s-1.2,0-1.2,0v.6s-.5,0-.5,0v-1.7s1.7,0,1.7,0c0,0,0,.3,0,.3h-1.3s0,.3,0,.3h1.1Z"></path>
-</svg>
+        <path fill="currentColor" d="M6.5,6c-4.1,3.3-4.4,9.2-.9,13s9.5,3.7,13,0,3.1-9.7-1-13l.2-.5c4.6,3.4,5.3,10,1.5,14.3s-10.5,4.3-14.3,0-3.3-10.9,1.4-14.3l.2.5Z"></path>
+        <path fill="currentColor" d="M7.4,19.7c-.1,0-.4-.2-.4-.3,2.7-.4,3.8-2.7,3.7-5.3-2.2-.4-4-2-4.8-4.1,1-.5,1.6-1.5,1.5-2.6,0-1-.3-1.9-.8-2.8-.4-.8-.9-1.5-1.6-2l1.6-1.5c.7,1,1.2,2.2,1.5,3.3.7,2.3.4,4.6-1.8,5.8,1.2,1.5,3.3,2.7,5.2,2.8v1.5c0,2.1-.9,4.1-2.9,4.9s-.8.2-1.2.3Z"></path>
+        <path fill="currentColor" d="M16.6,19.7c-1.7-.2-3-1-3.6-2.5s-.5-1.6-.5-2.5v-1.6c2-.1,4-1.3,5.2-2.9-2.2-1.2-2.5-3.4-1.9-5.6.4-1.3.9-2.5,1.6-3.6l1.6,1.5c-.7.6-1.1,1.3-1.6,2-.5.9-.8,1.9-.8,2.9,0,1.1.5,2.1,1.5,2.6-.8,2.1-2.6,3.7-4.8,4.1-.1,2.5.9,4.8,3.7,5.3,0,0-.3.2-.4.3Z"></path>
+        <path fill="currentColor" d="M15.1,4.6c-2-.7-4.1-.7-6.2,0,0-.2-.1-.3-.2-.5,2.1-.8,4.4-.7,6.5,0l-.2.5Z"></path>
+        <path fill="currentColor" d="M11.4,9.9h-1.1c0,0,0,.2,0,.3h1.3s0,.4,0,.4h-1.8s0-1.7,0-1.7h1.8s0,.4,0,.4h-1.3s0,.3,0,.3h1.2c0,0,0,.2,0,.3Z"></path>
+        <path fill="currentColor" d="M11.1,8l-.3-.5h-.6s0,.5,0,.5h-.4s0-1.7,0-1.7h1.2c.3,0,.5.2.6.4s0,.6-.3.7l.4.6h-.5ZM10.9,7.1c0,0,.2-.2.2-.2s-.1-.2-.2-.2h-.7s0,.4,0,.4h.8Z"></path>
+        <path fill="currentColor" d="M14.1,9.6c0,0,.1.3,0,.3h-1.1s0,.7,0,.7h-.4s0-1.7,0-1.7h1.7s0,.4,0,.4h-1.3s0,.3,0,.3h1.1Z"></path>
+        <path fill="currentColor" d="M14.1,7v.4s-1.2,0-1.2,0v.6s-.5,0-.5,0v-1.7s1.7,0,1.7,0c0,0,0,.3,0,.3h-1.3s0,.3,0,.3h1.1Z"></path>
+      </svg>
     )
   }
 ];
 
-export const PLAYERS_LIST = [
-  "LAMINE YAMAL 10",
-  "PEDRI 8",
-  "RAPHINHA 11",
-  "LEWANDOWSKI 9",
-  "RASHFORD 14",
-  "FERMÍN 16",
-  "F. DE JONG 21",
-  "CUBARSÍ 5",
-  "GAVI 6",
-  "ROONY 19",
-  "KOUNDE 23",
-  "FERRAN 7",
-  "BALDE 3",
-  "BERNAL 22",
-  "ERIC 24",
-  "M. CASADÓ 17",
-  "OLMO 20",
-  "CHRISTENSEN 15",
-  "GERARD MARTÍN 18",
-  "R. ARAUJO 4"
+export const PLAYERS: Player[] = [
+  { id: 'lamine', name: 'LAMINE YAMAL', number: '10', code: 'P10' },
+  { id: 'pedri', name: 'PEDRI', number: '8', code: 'P08' },
+  { id: 'raphinha', name: 'RAPHINHA', number: '11', code: 'P11' },
+  { id: 'lewandowski', name: 'LEWANDOWSKI', number: '9', code: 'P09' },
+  { id: 'rashford', name: 'RASHFORD', number: '14', code: 'P14' },
+  { id: 'fermin', name: 'FERMÍN', number: '16', code: 'P16' },
+  { id: 'dejong', name: 'F. DE JONG', number: '21', code: 'P21' },
+  { id: 'cubarsi', name: 'CUBARSÍ', number: '5', code: 'P05' },
+  { id: 'gavi', name: 'GAVI', number: '6', code: 'P06' },
+  { id: 'roony', name: 'ROONY', number: '19', code: 'P19' },
+  { id: 'kounde', name: 'KOUNDE', number: '23', code: 'P23' },
+  { id: 'ferran', name: 'FERRAN', number: '7', code: 'P07' },
+  { id: 'balde', name: 'BALDE', number: '3', code: 'P03' },
+  { id: 'bernal', name: 'BERNAL', number: '22', code: 'P22' },
+  { id: 'eric', name: 'ERIC', number: '24', code: 'P24' },
+  { id: 'casado', name: 'M. CASADÓ', number: '17', code: 'P17' },
+  { id: 'olmo', name: 'OLMO', number: '20', code: 'P20' },
+  { id: 'christensen', name: 'CHRISTENSEN', number: '15', code: 'P15' },
+  { id: 'gerard', name: 'GERARD MARTÍN', number: '18', code: 'P18' },
+  { id: 'araujo', name: 'R. ARAUJO', number: '4', code: 'P04' }
 ];
+
+export const PLAYERS_LIST = PLAYERS.map(p => `${p.name} ${p.number}`);
 
 export const PRODUCT_DETAILS: AccordionSection[] = [
   {
@@ -110,13 +129,13 @@ export const PRODUCT_DETAILS: AccordionSection[] = [
     content: (
       <div className="space-y-4">
         <p className="font-bold">
-          Men’s FC Barcelona Fourth Match Jersey 25/26. With this Match version jersey, you&apos;re wearing the same one our players use.
+          Men’s FCB Fourth Match Jersey 25/26. With this Match version jersey, you&apos;re wearing the same one our players use.
         </p>
         <p>
-          &quot;This shirt is a living reminder of one of FC Barcelona’s most brilliant nights. Its prints recall November 19th, 2005, when Barça delivered an unforgettable 0–3 on matchday 12 of the league. Every detail of the design pays tribute to that moment that still makes Barça fans’ hearts beat faster. Inside the collar, the jersey includes the minutes of the goals 14&quot;, 58&quot; and 77&quot; as a timeless tribute to Eto&apos;o and Ronaldinho.&quot;
+          &quot;This shirt is a living reminder of one of FCB’s most brilliant nights. Its prints recall November 19th, 2005, when Barça delivered an unforgettable 0–3 on matchday 12 of the league. Every detail of the design pays tribute to that moment that still makes Barça fans’ hearts beat faster. Inside the collar, the jersey includes the minutes of the goals 14&quot;, 58&quot; and 77&quot; as a timeless tribute to Eto&apos;o and Ronaldinho.&quot;
         </p>
         <p>
-          The design features a striking zigzag pattern that fuses deep blue and garnet tones, symbolizing the club’s unstoppable energy and passion. The FC Barcelona crest is placed on the chest, on the left side, while the Nike logo appears on the right side.
+          The design features a striking zigzag pattern that fuses deep blue and garnet tones, symbolizing the club’s unstoppable energy and passion. The FCB crest is placed on the chest, on the left side, while the Nike logo appears on the right side.
         </p>
         <p>
           We combine authentic design details with lightweight, quick-drying technology to keep you cool and comfortable on the pitch.
@@ -162,9 +181,10 @@ export const PRODUCT_DETAILS: AccordionSection[] = [
 
 export const MAIN_PRODUCT: Product = {
   id: '202333090',
-  name: "SUPERCOPA Men's fourth jersey 25/26 FC Barcelona - Player's Edition",
+  sku: 'FCB-26-HOME',
+  name: "SUPERCOPA Men's fourth jersey 25/26 FCB - Player's Edition",
   price: 49.99,
-  originalPrice: 140.00,
+  originalPrice: 149.99,
   customizationPrice: 20.00,
   image: '/images/contentProduct/main.webp',
   images: [
@@ -188,7 +208,8 @@ export const MAIN_PRODUCT: Product = {
 export const RELATED_PRODUCTS: Product[] = [
   {
     id: '15202689679745',
-    name: "Fourth Short FC Barcelona 25/26 - Player's Edition",
+    name: "Fourth Short FCB 25/26 - Player's Edition",
+    sku: 'FCB-26-SHORT',
     price: 39.99,
     image: '/images/otherProducts/Short_fc_2526.webp',
     images: ['/images/otherProducts/Short_fc_2526.webp'],
@@ -197,7 +218,8 @@ export const RELATED_PRODUCTS: Product[] = [
   },
   {
     id: 'socks-2526',
-    name: "Fourth Kit Socks FC Barcelona 25/26",
+    sku: 'FCB-26-SOCKS',
+    name: "Fourth Kit Socks FCB 25/26",
     price: 19.99,
     image: '/images/otherProducts/fourth_kit_socks_2526.webp',
     images: ['/images/otherProducts/fourth_kit_socks_2526.webp'],
@@ -206,7 +228,8 @@ export const RELATED_PRODUCTS: Product[] = [
   },
   {
     id: '54860590219649',
-    name: "Pre-Match sweatshirt FC Barcelona fourth 25/26",
+    sku: 'FCB-26-SWEAT',
+    name: "Pre-Match sweatshirt FCB fourth 25/26",
     price: 64.99,
     image: '/images/otherProducts/pre_Match_sweatshirt.webp',
     images: ['/images/otherProducts/pre_Match_sweatshirt.webp'],
@@ -218,25 +241,25 @@ export const RELATED_PRODUCTS: Product[] = [
 export const YOU_MAY_ALSO_LIKE = [
   {
     id: '15202689679745',
-    name: "Fourth Short FC Barcelona 25/26 - Player's Edition",
+    name: "Fourth Short FCB 25/26 - Player's Edition",
     price: '€39.99',
     image: '/images/otherProducts/Short_fc_2526.webp'
   },
   {
     id: 'socks-2526',
-    name: "Fourth Kit Socks FC Barcelona 25/26",
+    name: "Fourth Kit Socks FCB 25/26",
     price: '€19.99',
     image: '/images/otherProducts/fourth_kit_socks_2526.webp'
   },
   {
     id: '54860590219649',
-    name: "Pre-Match sweatshirt FC Barcelona fourth 25/26",
+    name: "Pre-Match sweatshirt FCB fourth 25/26",
     price: '€64.99',
     image: '/images/otherProducts/pre_Match_sweatshirt.webp'
   },
   {
     id: 'pre-match-jersey',
-    name: "Pre-Match Jersey FC Barcelona Fourth 25/26",
+    name: "Pre-Match Jersey FCB Fourth 25/26",
     price: '€49.99',
     image: '/images/otherProducts/pre_Match_fourth_2526.webp'
   }

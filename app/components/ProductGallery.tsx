@@ -90,7 +90,7 @@ export default function ProductGallery() {
         >
           <Image 
             src={mainImage} 
-            alt="PSG Home Kit Main View"
+            alt="FCB Home Kit Main View"
             fill
             className="object-cover object-center group-hover:scale-110 transition-transform duration-500"
             sizes="(min-width: 1080px) 800px, 100vw"

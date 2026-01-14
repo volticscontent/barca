@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 import { headers } from 'next/headers';
 import Stripe from 'stripe';
-import pool from '../../lib/db';
-import { sendToUtmify, UtmifyPayload } from '../../lib/utmify';
+import pool from '@/app/lib/db';
+import { sendToUtmify, UtmifyPayload } from '@/app/lib/utmify';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_build_key', {
   typescript: true,
@@ -41,15 +41,10 @@ export async function POST(request: Request) {
     // Handle the event
     switch (event.type) {
       case 'checkout.session.completed':
+      case 'checkout.session.async_payment_succeeded':
         const session = event.data.object as Stripe.Checkout.Session;
         console.log(`✅ Checkout Session completed: ${session.id}`);
-        await saveOrderFromSession(session);
-        break;
-
-      case 'checkout.session.async_payment_succeeded':
-        const asyncSession = event.data.object as Stripe.Checkout.Session;
-        console.log(`✅ Async Payment succeeded: ${asyncSession.id}`);
-        await saveOrderFromSession(asyncSession);
+        await updateOrder(session);
         break;
 
       case 'payment_intent.succeeded':
@@ -76,97 +71,70 @@ export async function POST(request: Request) {
   }
 }
 
-async function saveOrderFromSession(session: Stripe.Checkout.Session) {
+async function updateOrder(session: Stripe.Checkout.Session) {
     try {
-        // Retrieve session with line_items to get product details
+        // Retrieve session
         const expandedSession = await stripe.checkout.sessions.retrieve(session.id, {
             expand: ['line_items']
         });
 
-        const metadata = expandedSession.metadata || {};
         const customerDetails = expandedSession.customer_details;
-        const lineItems = expandedSession.line_items?.data || [];
-
-        // Prepare products for DB and UTMify
-        const products = lineItems.map(item => ({
-            id: item.price?.product as string || 'unknown',
-            name: item.description || 'Product',
-            planId: item.price?.product as string || 'unknown',
-            planName: item.description || 'Product',
-            quantity: item.quantity || 1,
-            priceInCents: item.amount_total,
-            size: item.description?.match(/Taille: (.*?)(?: -|$)/)?.[1] || 'N/A'
-        }));
-
-        const productsJson = JSON.stringify(products);
-
-        // Save to DB
-        // Check for duplicates
-        // We use session.id or payment_intent as unique key.
-        // leads table uses payment_intent_id. session.payment_intent can be string or object.
         const paymentIntentId = typeof expandedSession.payment_intent === 'string' 
             ? expandedSession.payment_intent 
             : (expandedSession.payment_intent as Stripe.PaymentIntent)?.id;
+        
+        const orderId = expandedSession.metadata?.order_id;
 
-        if (paymentIntentId) {
-            const existingOrder = await pool.query('SELECT id FROM leads WHERE payment_intent_id = $1', [paymentIntentId]);
-            
-            if (existingOrder.rows.length === 0) {
-                 const query = `
-                    INSERT INTO leads (
-                        customer_email,
-                        customer_name,
-                        customer_phone,
-                        status,
-                        amount,
-                        currency,
-                        payment_intent_id,
-                        payment_method,
-                        products,
-                        utm_source,
-                        utm_medium,
-                        utm_campaign,
-                        utm_term,
-                        utm_content,
-                        src,
-                        sck
-                    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
-                    RETURNING id
-                `;
-                
-                const values = [
-                    customerDetails?.email || 'unknown@example.com',
-                    customerDetails?.name || 'Customer',
-                    customerDetails?.phone || '',
-                    expandedSession.payment_status,
-                    (expandedSession.amount_total || 0) / 100,
-                    (expandedSession.currency || 'eur').toUpperCase(),
-                    paymentIntentId,
-                    'credit_card', // Simplified
-                    productsJson,
-                    metadata.utm_source || '',
-                    metadata.utm_medium || '',
-                    metadata.utm_campaign || '',
-                    metadata.utm_term || '',
-                    metadata.utm_content || '',
-                    metadata.src || '',
-                    metadata.sck || ''
-                ];
+        // Update Order in DB
+        // We update status to 'paid' and fill in customer details
+        const updateResult = await pool.query(`
+            UPDATE orders 
+            SET 
+                status = 'paid',
+                customer_email = $1,
+                customer_name = $2,
+                customer_phone = $3,
+                payment_intent_id = $4,
+                updated_at = NOW()
+            WHERE stripe_session_id = $5 OR (id = $6 AND $6 IS NOT NULL)
+            RETURNING *
+        `, [
+            customerDetails?.email || 'unknown@example.com',
+            customerDetails?.name || 'Customer',
+            customerDetails?.phone || '',
+            paymentIntentId,
+            session.id,
+            orderId ? parseInt(orderId) : null
+        ]);
 
-                await pool.query(query, values);
-                console.log(`Order ${paymentIntentId} saved to DB from Webhook.`);
-            } else {
-                console.log(`Order ${paymentIntentId} already exists in DB.`);
-            }
+        if (updateResult.rowCount === 0) {
+            console.error(`Order not found for session ${session.id} (Order ID: ${orderId}). This might be a legacy order or race condition.`);
+            return; 
         }
 
+        const order = updateResult.rows[0];
+        console.log(`Order ${order.id} updated to paid.`);
+
         // Send to UTMify
+        // Fetch items from DB to get internal product names and details
+        const dbItems = await pool.query('SELECT * FROM order_items WHERE order_id = $1', [order.id]);
+        
+        const productsForUtmify = dbItems.rows.map(item => ({
+            id: item.sku,
+            name: item.product_name || item.sku, 
+            planId: item.sku,
+            planName: item.product_name || item.sku,
+            quantity: item.quantity,
+            priceInCents: Math.round(Number(item.price) * 100),
+            size: item.size || 'N/A'
+        }));
+
         const payload: UtmifyPayload = {
             orderId: paymentIntentId || session.id,
             platform: 'Stripe', 
             paymentMethod: 'credit_card', 
             status: 'paid',
-            createdAt: new Date(expandedSession.created * 1000).toISOString().replace('T', ' ').substring(0, 19),
+            createdAt: new Date(order.created_at).toISOString().replace('T', ' ').substring(0, 19),
             approvedDate: new Date().toISOString().replace('T', ' ').substring(0, 19),
             customer: {
                 name: customerDetails?.name || 'Customer',
@@ -185,27 +153,28 @@ async function saveOrderFromSession(session: Stripe.Checkout.Session) {
                     zipCode: customerDetails?.address?.postal_code || ''
                 }
             },
-            products: products,
+            products: productsForUtmify,
             trackingParameters: {
-                src: metadata.src || null,
-                sck: metadata.sck || null,
-                utm_source: metadata.utm_source || null,
-                utm_medium: metadata.utm_medium || null,
-                utm_campaign: metadata.utm_campaign || null,
-                utm_term: metadata.utm_term || null,
-                utm_content: metadata.utm_content || null,
+                src: order.utm_content || null, 
+                sck: null,
+                utm_source: order.utm_source || null,
+                utm_medium: order.utm_medium || null,
+                utm_campaign: order.utm_campaign || null,
+                utm_term: order.utm_term || null,
+                utm_content: order.utm_content || null,
             },
             commission: {
                 totalPriceInCents: expandedSession.amount_total || 0,
                 gatewayFeeInCents: 0,
-                userCommissionInCents: 0,
+                userCommissionInCents: expandedSession.amount_total || 0,
                 currency: expandedSession.currency ? expandedSession.currency.toUpperCase() : 'EUR'
             }
         };
 
         await sendToUtmify(payload);
+        console.log(`Order ${order.id} sent to UTMify.`);
 
     } catch (err) {
-        console.error('Error in saveOrderFromSession:', err);
+        console.error('Error in updateOrder:', err);
     }
 }

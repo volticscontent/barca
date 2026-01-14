@@ -13,10 +13,10 @@ export default function Home() {
   return (
     <div className="min-h-screen flex flex-col bg-white">
       <TrackViewContent
-        contentName="PSG Nike Dri-FIT ADV Home Match Shirt 2025-26"
+        contentName="FCB Nike Dri-FIT ADV Home Match Shirt 2025-26"
         contentIds={["202333090"]}
         contentType="product"
-        value={149.99}
+        value={49.99}
         currency="EUR"
       />
       <Header />

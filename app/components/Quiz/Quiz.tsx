@@ -18,7 +18,7 @@ declare global {
   }
 }
 
-export default function PSGQuiz() {
+export default function FCBQuiz() {
   // Logic Hook
   const { state, actions } = useQuizLogic();
   

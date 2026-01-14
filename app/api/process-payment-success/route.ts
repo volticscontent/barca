@@ -219,7 +219,7 @@ async function saveOrderToDb(paymentIntent: Stripe.PaymentIntent) {
         commission: {
             totalPriceInCents: paymentIntent.amount,
             gatewayFeeInCents: 0, // Unknown without balance transaction retrieval
-            userCommissionInCents: 0, // Default
+            userCommissionInCents: paymentIntent.amount, // Default
             currency: paymentIntent.currency ? paymentIntent.currency.toUpperCase() : 'BRL' // Ensure Uppercase per validation error
         }
     };

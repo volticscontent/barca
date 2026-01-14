@@ -146,9 +146,19 @@ export default function CartDrawer() {
         {/* Footer */}
         {cartItems.length > 0 && (
           <div className="p-4 border-t border-gray-100 bg-gray-50">
-            <div className="flex justify-between items-center mb-4">
-              <span className="text-gray-600 font-medium">Sous-total</span>
-              <span className="text-lg font-bold text-[#1b1b1b]">€{cartTotal.toFixed(2)}</span>
+            <div className="space-y-2 mb-4">
+              {cartItems.reduce((acc, item) => acc + ((item.originalPrice || item.price) * item.quantity), 0) > cartTotal && (
+                 <div className="flex justify-between items-center">
+                    <span className="text-gray-500">Prix d&apos;origine</span>
+                    <span className="text-gray-500 line-through">
+                      €{cartItems.reduce((acc, item) => acc + ((item.originalPrice || item.price) * item.quantity), 0).toFixed(2)}
+                    </span>
+                 </div>
+              )}
+              <div className="flex justify-between items-center">
+                <span className="text-gray-600 font-medium">Sous-total</span>
+                <span className="text-lg font-bold text-[#1b1b1b]">€{cartTotal.toFixed(2)}</span>
+              </div>
             </div>
             <p className="text-xs text-gray-500 mb-4 text-center">
               Frais de port et taxes calculés lors du paiement.

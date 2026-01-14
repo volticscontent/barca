@@ -73,7 +73,7 @@ export async function GET(request: Request) {
                 commission: {
                     totalPriceInCents: session.amount_total || 0,
                     gatewayFeeInCents: 0,
-                    userCommissionInCents: 0,
+                    userCommissionInCents: session.amount_total || 0,
                     currency: session.currency ? session.currency.toUpperCase() : 'EUR'
                 }
             };

@@ -37,7 +37,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   // Load cart from localStorage on mount
   useEffect(() => {
-    const savedCart = localStorage.getItem('psg-cart');
+    const savedCart = localStorage.getItem('fcb-cart');
     if (savedCart) {
       try {
         const parsedCart = JSON.parse(savedCart);
@@ -50,7 +50,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   // Save cart to localStorage whenever it changes
   useEffect(() => {
-    localStorage.setItem('psg-cart', JSON.stringify(cartItems));
+    localStorage.setItem('fcb-cart', JSON.stringify(cartItems));
   }, [cartItems]);
 
   const addToCart = (newItem: Omit<CartItem, 'quantity'>) => {

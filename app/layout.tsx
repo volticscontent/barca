@@ -9,8 +9,8 @@ import { Suspense } from "react";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "PSG Nike Dri-FIT ADV Home Match Shirt 2025-26",
-  description: "Official Paris Saint-Germain Nike Dri-FIT ADV Match Home Shirt 2025/26. Authentic design, advanced breathability.",
+  title: "FCB Nike Dri-FIT ADV Home Match Shirt 2025-26",
+  description: "Official FC Barcelona Nike Dri-FIT ADV Match Home Shirt 2025/26. Authentic design, advanced breathability.",
 };
 
 declare global {
@@ -29,6 +29,7 @@ export default function RootLayout({
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        {/* eslint-disable-next-line @next/next/no-page-custom-font */}
         <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@200..800&display=swap" rel="stylesheet" />
         {/* <Script id="utmify-pixel" strategy="afterInteractive">
           {`

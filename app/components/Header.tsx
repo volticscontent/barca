@@ -22,7 +22,7 @@ export default function Header() {
             </button>
             <Link href="/" className="flex-shrink-0 flex items-center gap-2">
               <div className="w-32 h-10 relative flex items-center justify-start">
-                 <Image src="/images/svgs/logo.svg" alt="PSG Official Store" width={128} height={40} className="object-contain object-left" priority />
+                 <Image src="/images/svgs/logo.svg" alt="FCB Official Store" width={128} height={40} className="object-contain object-left" priority />
               </div>
             </Link>
           </div>

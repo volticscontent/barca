@@ -151,22 +151,23 @@ export default function CheckoutPage() {
                         ))}
                     </div>
 
-                    <div className="border-t border-gray-400 pt-4 space-y-2">
-                        <div className="flex justify-between text-sm text-black">
+                    <div className="border-t border-gray-200 pt-4 pb-6 space-y-3">
+                        <div className="flex justify-between items-center text-gray-500">
                             <span>Subtotal</span>
-                            <span>€{totalAmount.toFixed(2)}</span>
-                        </div>
-                        <div className="flex justify-between text-sm text-gray-600">
-                            <span>Envío</span>
-                            <span className="text-green-600 font-medium">Gratis</span>
+                            <span className="line-through">€{totalOriginalAmount.toFixed(2)}</span>
                         </div>
                         {totalSavings > 0 && (
-                            <div className="flex justify-between text-x1 line-through text-gray-500 font-medium">
-                                <span>Ahorrado</span>
+                            <div className="flex justify-between items-center text-green-600 font-medium">
+                                <span>Ahorro total</span>
                                 <span>-€{totalSavings.toFixed(2)}</span>
                             </div>
                         )}
+                        <div className="flex justify-between items-center text-xl font-bold text-[#1b1b1b] pt-3 border-t border-gray-200">
+                            <span>Total</span>
+                            <span>€{totalAmount.toFixed(2)}</span>
+                        </div>
                     </div>
+
                 </div>
             </div>
 

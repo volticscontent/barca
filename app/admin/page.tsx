@@ -36,13 +36,16 @@ export default function AdminLogin() {
         <h1 className="text-2xl font-bold mb-6 text-center text-gray-800">Admin Login</h1>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Senha</label>
+            <label htmlFor="admin-password" className="block text-sm font-medium text-gray-700 mb-1">Senha</label>
             <input
+              id="admin-password"
+              name="password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none"
               placeholder="Digite a senha de admin"
+              autoComplete="current-password"
             />
           </div>
           {error && <p className="text-red-500 text-sm">{error}</p>}

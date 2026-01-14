@@ -89,7 +89,10 @@ export default function KitCustomization({ onCustomizationChange, players, price
       <div className="px-4">
         {activeTab === 'player' ? (
           <div className="relative">
+            <label htmlFor="player-select" className="sr-only">Choose player</label>
             <select
+              id="player-select"
+              name="player-select"
               value={selectedPlayer}
               onChange={handlePlayerChange}
               className="w-full h-12 px-4 bg-white border border-black rounded-sm appearance-none cursor-pointer focus:outline-none focus:border-black text-gray-900 font-medium"
@@ -114,6 +117,8 @@ export default function KitCustomization({ onCustomizationChange, players, price
               <input
                 type="text"
                 id="kit-name"
+                name="kit-name"
+                autoComplete="off"
                 value={customName}
                 onChange={handleCustomNameChange}
                 placeholder="Name"
@@ -127,6 +132,8 @@ export default function KitCustomization({ onCustomizationChange, players, price
               <input
                 type="text"
                 id="kit-number"
+                name="kit-number"
+                autoComplete="off"
                 value={customNumber}
                 onChange={handleCustomNumberChange}
                 placeholder="00"

@@ -95,7 +95,10 @@ const CompleteTheLook = () => {
             
             <div className="mt-auto space-y-2">
               <div className="relative">
+                 <label htmlFor={`size-select-${product.id}`} className="sr-only">Select size</label>
                  <select 
+                   id={`size-select-${product.id}`}
+                   name={`size-select-${product.id}`}
                    className={`w-full appearance-none bg-white border ${errors[product.id] ? 'border-red-500' : 'border-gray-300'} rounded-sm py-2 px-3 text-sm text-[#1b1b1b] focus:outline-none focus:border-[#1b1b1b]`}
                    value={selectedSizes[product.id] || ''}
                    onChange={(e) => handleSizeChange(product.id, e.target.value)}
@@ -144,7 +147,7 @@ export default function ProductInfo({ selectedBadge, onBadgeChange }: { selected
 
   const BASE_PRICE = MAIN_PRODUCT.price;
   const CUSTOMIZATION_PRICE = MAIN_PRODUCT.customizationPrice || 20.00;
-  const ORIGINAL_BASE_PRICE = MAIN_PRODUCT.originalPrice || 140.00;
+  // const ORIGINAL_BASE_PRICE = MAIN_PRODUCT.originalPrice || 149.99; // Unused
   const PRODUCT_NAME = MAIN_PRODUCT.name;
 
   const handleCustomizationChange = (data: { type: 'player' | 'custom' | null, name: string, number: string }) => {
@@ -156,7 +159,8 @@ export default function ProductInfo({ selectedBadge, onBadgeChange }: { selected
   const badgePrice = badgeData ? badgeData.price : 0;
   
   const finalPrice = (hasCustomization ? BASE_PRICE + CUSTOMIZATION_PRICE : BASE_PRICE) + badgePrice;
-  const finalOriginalPrice = (hasCustomization ? ORIGINAL_BASE_PRICE + CUSTOMIZATION_PRICE : ORIGINAL_BASE_PRICE) + badgePrice;
+  // Ensure exactly €100 discount logic as per briefing
+  const finalOriginalPrice = finalPrice + 100;
 
   const handleAddToCart = () => {
     if (!selectedSize) {
@@ -234,11 +238,12 @@ export default function ProductInfo({ selectedBadge, onBadgeChange }: { selected
       <div className="mt-8 mb-8">
         <div className="relative rounded-lg overflow-hidden mb-6">
            <Image 
+            key={selectedBadge || 'default'}
             src={badgeData?.productImage || MAIN_PRODUCT.images[1] || MAIN_PRODUCT.image} 
             alt="Back of shirt" 
             width={1200}
             height={1200}
-            className="w-full h-auto object-contain mix-blend-multiply"
+            className="w-full h-auto object-contain"
           />
         </div>
 
@@ -247,13 +252,14 @@ export default function ProductInfo({ selectedBadge, onBadgeChange }: { selected
             <h2 className="text-[#181733] text-base font-bold uppercase font-['Assistant',sans-serif]">Add a competition badge</h2>
             <div className="flex items-center text-[#181733] font-bold text-base font-['Assistant',sans-serif]">
               <span>+</span>
-              <span>€{MAIN_PRODUCT.badgePrice?.toFixed(2) || '30.00'}</span>
+              <span>€{selectedBadge ? badgePrice.toFixed(2) : '15.00 - €30.00'}</span>
             </div>
           </div>
 
           <div className="flex flex-wrap gap-2">
             {MAIN_PRODUCT.badges?.map((badge) => (
-              <label 
+              <button 
+                type="button"
                 key={badge.id}
                 className={`
                   relative flex items-center gap-1.5 px-3 py-2 rounded-full border cursor-pointer transition-all
@@ -282,7 +288,7 @@ export default function ProductInfo({ selectedBadge, onBadgeChange }: { selected
                 <span className="text-xs font-['Assistant',sans-serif] font-normal uppercase tracking-wide">
                   {badge.label}
                 </span>
-              </label>
+              </button>
             ))}
           </div>
         </div>

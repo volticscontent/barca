@@ -27,6 +27,7 @@ export default function SizeSelector({ selectedSize, onSelectSize }: { selectedS
       <div className="flex flex-wrap gap-1">
         {SIZES.map((size) => (
           <button
+            type="button"
             key={size}
             onClick={() => onSelectSize(size)}
             className={`
